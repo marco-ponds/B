@@ -1,6 +1,6 @@
 import ActivationFunction from "./activationfunction";
 
-export default class Sigmoid extends ActivationFunction {
+export default class Linear extends ActivationFunction {
     
     constructor(v) {
         super(v);
@@ -8,7 +8,7 @@ export default class Sigmoid extends ActivationFunction {
 
     calc(x) {
         if (!isNaN(x)) {
-            return 1.0 / ( 1.0 + Math.exp(-this.value * x));
+            return x;
         }
         return 1;
     }

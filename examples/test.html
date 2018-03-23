@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+    <script src="../dist/B.js"></script>
+    <script>
+        
+
+        var numberOfInputs=2;
+        var numberOfOutputs=1;
+        var numberOfHiddenNeurons= [3];
+        var hiddenAcFnc = [ new B.Sigmoid(1.0) ] ;
+        var outputAcFnc = new B.Linear(1.0);
+
+        console.log("Creating Neural Network...");
+
+        var net = new B.Net(numberOfInputs,numberOfOutputs,
+            numberOfHiddenNeurons,hiddenAcFnc,outputAcFnc);
+        
+        console.log("Neural Network created!");
+
+    </script>
+</head>
+<body>
+    
+</body>
+</html>

@@ -3,24 +3,9 @@ import HiddenLayer from './hiddenlayer';
 import OutputLayer from './outputlayer';
 import Sigmoid from './sigmoid';
 
-export default class Net {
-    // public class NeuralNet {
-    //     private InputLayer inputLayer; // 
-    //     private ArrayList<HiddenLayer> hiddenLayer;
-    //     private OutputLayer outputLayer;
-    //     private int numOfHiddenLayers;
-    //     private int numberOfInputs; ///
-    //     private int numberOfOutputs; // 
-    //     private ArrayList<Double> input; // 
-    //     private ArrayList<Double> output; // 
-    // …
-    // }
+export default class Net {  
 
-    // public NeuralNet(int numberofinputs,int numberofoutputs,
-    //     int [] numberofhiddenneurons,IActivationFunction[] hiddenAcFnc,
-    //     IActivationFunction outputAcFnc)    
-
-    constructor(numOfInputs, numOfOutputs, numOfHiddenLayers = [], hiddenActivationFnc = [], ouputActivationFnc) {
+    constructor(numOfInputs, numOfOutputs, numOfHiddenLayers = [], hiddenActivationFnc = [], outputActivationFnc) {
         this.numOfInputs = numOfInputs;
         this.numOfOutputs = numOfOutputs;
 
@@ -68,7 +53,7 @@ export default class Net {
             outputLayer.prev = this.hiddenLayers[this.numOfHiddenLayers - 1];
             this.hiddenLayers[this.numOfHiddenLayers - 1].next = outputLayer;
           } else {
-            outputLayer = new OutputLayer(this.numberofinputs, this.numberofoutputs, this.outputAcFnc);
+            outputLayer = new OutputLayer(this.numOfInputs, this.numOfOutputs, this.outputAcFnc);
 
             this.inputLayer.next = outputLayer;
             outputLayer.prev = this.inputLayer;
