@@ -3,39 +3,41 @@ import HiddenLayer from './hiddenlayer';
 import OutputLayer from './outputlayer';
 import Sigmoid from './sigmoid';
 
-export default class Net {  
+export default class Net {
 
-    constructor(numOfInputs, numOfOutputs, numOfHiddenLayers = [], hiddenActivationFnc = [], outputActivationFnc) {
+    constructor(numOfInputs, numOfOutputs, hiddenLayers = [], hiddenActivationFnc = [], outputActivationFnc) {
         this.numOfInputs = numOfInputs;
         this.numOfOutputs = numOfOutputs;
 
-        this.numOfHiddenLayers = numOfHiddenLayers;
+        this.numOfHiddenLayers = hiddenLayers.length;
         this.hiddenActivationFnc = hiddenActivationFnc;
 
         this.hiddenLayers = [];
         this.inputLayer = new InputLayer(this.numOfInputs);
+        this.inputLayer.init();
 
         this.inputs = new Array(this.numOfInputs);
         this.outputs = new Array(this.numOfOutputs);
 
         this.outputAcFnc = outputActivationFnc;
 
-        this.hiddenLayers = this.createHiddenLayers();
+        this.hiddenLayers = this.createHiddenLayers(hiddenLayers);
         this.outputLayer = this.createOutputLayer();
     }
 
-    createHiddenLayers() {
+    createHiddenLayers(hiddenLayers) {
         let layers = [];
 
         let ref = this.inputLayer;
 
-        for (var i=0; i<this.numOfHiddenLayers.length; i++) {
-            
-            const hidden = new HiddenLayer(ref.numberOfNeurons, this.numOfHiddenLayers[i], this.hiddenActivationFnc[i]);
+        for (var i=0; i<hiddenLayers.length; i++) {
+
+            const hidden = new HiddenLayer(ref.numOfNeurons, hiddenLayers[i], this.hiddenActivationFnc[i]);
             ref.next = hidden;
             hidden.prev = ref;
-
             layers.push(hidden);
+
+            hidden.init();
             ref = hidden;
         }
 
@@ -45,9 +47,9 @@ export default class Net {
     createOutputLayer() {
         let outputLayer;
 
-        if (this.numOfHiddenLayers.length > 0) {
+        if (this.numOfHiddenLayers > 0) {
 
-            const inputs = this.hiddenLayers[this.numOfHiddenLayers - 1].numberOfNeurons;
+            const inputs = this.hiddenLayers[this.numOfHiddenLayers - 1].numOfNeurons;
 
             outputLayer = new OutputLayer(inputs, this.numOfOutputs, this.outputAcFnc );
             outputLayer.prev = this.hiddenLayers[this.numOfHiddenLayers - 1];
@@ -58,22 +60,23 @@ export default class Net {
             this.inputLayer.next = outputLayer;
             outputLayer.prev = this.inputLayer;
         }
+        outputLayer.init();
         return outputLayer;
     }
 
     calc() {
-        inputLayer.inputs = this.input;
-        inputLayer.calc();
+        this.inputLayer.inputs = this.inputs;
+        this.inputLayer.calc();
 
         for (var i=0; i<this.numOfHiddenLayers;i++){
-            const layer = hiddenLayer[i];
-            
+            const layer = this.hiddenLayers[i];
+
             layer.inputs = layer.prev.outputs;
             layer.calc();
         }
 
-        this.outputLayer.inputs(this.outputLayer.prev.outputs);
+        this.outputLayer.inputs = this.outputLayer.prev.outputs;
         this.outputLayer.calc();
-        this.output = outputLayer.outputs();
+        this.outputs = this.outputLayer.outputs;
       }
 }

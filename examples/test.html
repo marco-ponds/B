@@ -4,7 +4,7 @@
     <title>Test</title>
     <script src="../dist/B.js"></script>
     <script>
-        
+
 
         var numberOfInputs=2;
         var numberOfOutputs=1;
@@ -16,12 +16,32 @@
 
         var net = new B.Net(numberOfInputs,numberOfOutputs,
             numberOfHiddenNeurons,hiddenAcFnc,outputAcFnc);
-        
+
         console.log("Neural Network created!");
+
+        var neuralInput = [ 1.5 , 0.5 ];
+        var neuralOutput = [];
+
+        console.log("Feeding the values [" + neuralInput[0] + " ; " + neuralInput[1] + "] to the neural network");
+        net.inputs = neuralInput;
+        net.calc();
+
+        neuralOutput= net.outputs;
+
+        console.log('result 1: ', neuralOutput);
+
+        neuralInput[0] = 1.0;
+        neuralInput[1] = 2.1;
+
+        net.inputs = neuralInput;
+        net.calc();
+        neuralOutput= net.outputs;
+
+        console.log('result 2: ', neuralOutput);
 
     </script>
 </head>
 <body>
-    
+
 </body>
 </html>
