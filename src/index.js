@@ -1,12 +1,16 @@
-import Neuron from './B/neuron';
-import Layer from './B/layer';
-import InputLayer from './B/inputlayer';
-import OutputLayer from './B/outputlayer';
-import HiddenLayer from './B/hiddenlayer';
-import Net from './B/net';
-import ActivationFunction from './B/activationfunction';
-import Sigmoid from './B/sigmoid';
-import Linear from './B/linear';
+import Neuron from './B/net/neuron';
+import Layer from './B/net/layer';
+import InputLayer from './B/net/inputlayer';
+import OutputLayer from './B/net/outputlayer';
+import HiddenLayer from './B/net/hiddenlayer';
+import Net from './B/net/net';
+import ActivationFunction from './B/math/activationfunction';
+import Sigmoid from './B/math/sigmoid';
+import Linear from './B/math/linear';
+import Hyperthan from './B/math/hypertan';
+import DeltaRule from './B/training/deltarule';
+import ErrorMeasurement from './B/training/errorMeasurement';
+import PT from './B/training/trainer';
 
 export {
     Neuron,
@@ -17,5 +21,9 @@ export {
     Net,
     ActivationFunction,
     Sigmoid,
-    Linear
+    Linear,
+    Hyperthan,
+    DeltaRule,
+    ErrorMeasurement,
+    PT
 }

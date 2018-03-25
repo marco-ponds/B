@@ -1,7 +1,7 @@
 import InputLayer from './inputlayer';
 import HiddenLayer from './hiddenlayer';
 import OutputLayer from './outputlayer';
-import Sigmoid from './sigmoid';
+import Sigmoid from '../math/sigmoid';
 
 export default class Net {
 

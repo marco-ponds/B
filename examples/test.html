@@ -6,20 +6,20 @@
     <script>
 
 
-        var numberOfInputs=2;
-        var numberOfOutputs=1;
-        var numberOfHiddenNeurons= [3];
-        var hiddenAcFnc = [ new B.Sigmoid(1.0) ] ;
+        var numberOfInputs=5;
+        var numberOfOutputs=3;
+        var numberOfHiddenNeurons= [25, 25];
+        var hiddenAcFnc = [ new B.Sigmoid(1.0), new B.Sigmoid(0.8) ] ;
         var outputAcFnc = new B.Linear(1.0);
 
         console.log("Creating Neural Network...");
 
-        var net = new B.Net(numberOfInputs,numberOfOutputs,
-            numberOfHiddenNeurons,hiddenAcFnc,outputAcFnc);
+        var net = new B.Net(numberOfInputs, numberOfOutputs,
+            numberOfHiddenNeurons, hiddenAcFnc, outputAcFnc);
 
         console.log("Neural Network created!");
 
-        var neuralInput = [ 1.5 , 0.5 ];
+        var neuralInput = [ 1.5 , 0.5, 1.2, 0.7, 1.1];
         var neuralOutput = [];
 
         console.log("Feeding the values [" + neuralInput[0] + " ; " + neuralInput[1] + "] to the neural network");

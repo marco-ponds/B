@@ -7,7 +7,7 @@ export default class Neuron {
         this.numOfInputs = numOfInputs;
         this.weights = new Array(this.numOfInputs);
         this.inputs = new Array(this.numOfInputs);
-        this.bias = 1.0;
+        this.bias = 2.0;
         this.activationFunction = activationFunction;
     }
 
