@@ -21,7 +21,11 @@
     "homepage": "https://github.com/marco-ponds/B#readme",
     "devDependencies": {
         "babel-loader": "7.1.4",
+        "babel-preset-stage-0": "^6.24.1",
         "webpack": "4.1.0",
         "webpack-cli": "2.0.10"
+    },
+    "dependencies": {
+        "puppeteer": "1.4.0"
     }
 }

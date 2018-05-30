@@ -1,9 +1,5 @@
 export default class ActivationFunction {
 
-    constructor(v) {
-        this.value = v;
-    }
-
     static types() {
         return {
             STEP: 0,

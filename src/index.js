@@ -11,6 +11,7 @@ import Hyperthan from './B/math/hypertan';
 import DeltaRule from './B/training/deltarule';
 import ErrorMeasurement from './B/training/errorMeasurement';
 import PT from './B/training/trainer';
+import Darwin from './B/genetics/darwin';
 
 export {
     Neuron,
@@ -25,5 +26,6 @@ export {
     Hyperthan,
     DeltaRule,
     ErrorMeasurement,
-    PT
+    PT,
+    Darwin
 }

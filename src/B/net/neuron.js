@@ -2,12 +2,11 @@ export default class Neuron {
 
     constructor(numOfInputs, activationFunction) {
         this.output = undefined;
-        this.outputBeforeActivation = undefined;
 
         this.numOfInputs = numOfInputs;
         this.weights = new Array(this.numOfInputs);
         this.inputs = new Array(this.numOfInputs);
-        this.bias = 2.0;
+        this.bias = Math.random();
         this.activationFunction = activationFunction;
     }
 
@@ -19,6 +18,30 @@ export default class Neuron {
         }
     }
 
+    updateWeights(weights) {
+        for (var i=0; i <= weights.length; i++) {
+            if (!isNaN(weights[i])) {
+                this.weights[i] = weights[i];
+            }
+        }
+    }
+
+    mutateWeights() {
+        for (var i=0; i <= this.weights.length; i++) {
+            this.weights[i] += ( Math.random() * 2 ) -1;
+        }
+    }
+
+    updateBias(bias) {
+        if (!isNaN(bias)) {
+            this.bias = bias;
+        }
+    }
+
+    mutateBias() {
+        this.bias += ( Math.random() * 2 ) -1;
+    }
+
     calc() {
         let outputBeforeActivation = 0.0;
 
@@ -28,8 +51,7 @@ export default class Neuron {
                 outputBeforeActivation += ( (i === this.numOfInputs) ? this.bias : this.inputs[i]) * this.weights[i];
             }
         }
-        this.outputBeforeActivation = outputBeforeActivation;
-        this.output= this.activationFunction.calc(this.outputBeforeActivation);
+        this.output = this.activationFunction.calc(outputBeforeActivation);
       }
 
 }

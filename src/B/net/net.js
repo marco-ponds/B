@@ -5,12 +5,21 @@ import Sigmoid from '../math/sigmoid';
 
 export default class Net {
 
-    constructor(numOfInputs, numOfOutputs, hiddenLayers = [], hiddenActivationFnc = [], outputActivationFnc) {
+    constructor({ numOfInputs, numOfOutputs, hiddenLayersLayout = [], hiddenActivationFnc = [], outputActivationFnc }) {
         this.numOfInputs = numOfInputs;
         this.numOfOutputs = numOfOutputs;
 
-        this.numOfHiddenLayers = hiddenLayers.length;
+        this.hiddenLayersLayout = hiddenLayersLayout;
+        this.numOfHiddenLayers = hiddenLayersLayout.length;
         this.hiddenActivationFnc = hiddenActivationFnc;
+
+        this._id = '' + +(new Date());
+
+        // this represents our network's score after execution
+        this._score = 0;
+
+        // doneCalculating is set to false before calculation and true after calculation
+        this.doneCalculating = false;
 
         this.hiddenLayers = [];
         this.inputLayer = new InputLayer(this.numOfInputs);
@@ -21,18 +30,112 @@ export default class Net {
 
         this.outputAcFnc = outputActivationFnc;
 
-        this.hiddenLayers = this.createHiddenLayers(hiddenLayers);
+        this.hiddenLayers = this.createHiddenLayers(hiddenLayersLayout);
         this.outputLayer = this.createOutputLayer();
     }
 
-    createHiddenLayers(hiddenLayers) {
+    id() {
+        return this._id;
+    }
+
+    isEqual(net) {
+        return this.id() === net.id();
+    }
+
+    setInput(inputs) {
+        this.inputs = inputs;
+        this.inputLayer.inputs = inputs;
+    }
+
+    getParams() {
+        return {
+            hiddenLayersLayout: this.hiddenLayersLayout,
+            hiddenActivationFnc: this.hiddenActivationFnc,
+            outputActivationFnc: this.outputActivationFnc,
+            weights: this.getWeights(),
+            bias: this.getBias()
+        }
+    }
+
+    getWeights() {
+        const inputs = this.inputLayer.neurons.map((n) => n.weights);
+        const outputs = this.outputLayer.neurons.map((n) => n.weights);
+        const hidden = this.hiddenLayers.map((layer) => layer.neurons.map((n) => n.weights));
+
+        return {
+            inputs,
+            outputs,
+            hidden
+        };
+    }
+
+    getBias() {
+        const inputs = this.inputLayer.neurons.map((n) => n.bias);
+        const outputs = this.outputLayer.neurons.map((n) => n.bias);
+        const hidden = this.hiddenLayers.map((layer) => layer.neurons.map((n) => n.bias));
+
+        return {
+            inputs,
+            outputs,
+            hidden
+        };
+    }
+
+    updateWeights({ inputs, outputs, hidden }) {
+        this.inputLayer.neurons.map((n, i) => n.updateWeights(inputs[i]));
+        this.outputLayer.neurons.map((n, i) => n.updateWeights(outputs[i]));
+        this.hiddenLayers.map((layer) => layer.neurons.map((n, i) => n.updateWeights(hidden[i][j])));
+    }
+
+    updateBias({ inputs, outputs, hidden }) {
+        this.inputLayer.neurons.map((n, i) => n.updateBias(inputs[i]));
+        this.outputLayer.neurons.map((n, i) => n.updateBias(outputs[i]));
+        this.hiddenLayers.map((layer, i) => layer.neurons.map((n, j) => n.updateBias(hidden[i][j])));
+    }
+
+    mutateBias() {
+        this.inputLayer.neurons.map((n, i) => n.mutateBias());
+        this.outputLayer.neurons.map((n, i) => n.mutateBias());
+        this.hiddenLayers.map((layer) => layer.neurons.map((n) => n.mutateBias()));
+
+        return this;
+    }
+
+    mutateWeights() {
+        this.inputLayer.neurons.map((n, i) => n.mutateWeights());
+        this.outputLayer.neurons.map((n, i) => n.mutateWeights());
+        this.hiddenLayers.map((layer) => layer.neurons.map((n) => n.mutateWeights()));
+
+        return this;
+    }
+
+    mutateHiddenLayersLayout() {
+        const values = this.hiddenLayersLayout;
+        let newLayout = Array.from({length: Math.floor(Math.random() * values.length) + 5}).forEach((el, i) => {
+            if (values[i]) {
+                el[i] = values[i] + ( Math.random() * 2 ) -1;
+            } else {
+                el[i] = Math.floor(Math.random() * 500 ) + 1;
+            }
+        });
+
+        this.hiddenLayersLayout = newLayout;
+        this.numOfHiddenLayers = newLayout.length;
+        this.hiddenLayers = this.createHiddenLayers(newLayout);
+        this.outputLayer = this.createOutputLayer();
+        this.hiddenActivationFnc = newLayout.map((layer) => new Sigmoid());
+
+        return this;
+    }
+
+    createHiddenLayers(hiddenLayersLayout) {
         let layers = [];
 
         let ref = this.inputLayer;
 
-        for (var i=0; i<hiddenLayers.length; i++) {
+        for (var i=0; i<hiddenLayersLayout.length; i++) {
 
-            const hidden = new HiddenLayer(ref.numOfNeurons, hiddenLayers[i], this.hiddenActivationFnc[i]);
+            const hidden = new HiddenLayer(ref.numOfNeurons, hiddenLayersLayout[i], this.hiddenActivationFnc[i]);
             ref.next = hidden;
             hidden.prev = ref;
             layers.push(hidden);
@@ -42,6 +145,18 @@ export default class Net {
         }
 
         return layers;
+    }
+
+    getScore() {
+        return this._score;
+    }
+
+    setScore(score = 0) {
+        this._score = score;
+    }
+
+    isCalculationDone() {
+        return this.doneCalculating;
     }
 
     createOutputLayer() {
@@ -65,7 +180,7 @@ export default class Net {
     }
 
     calc() {
-        this.inputLayer.inputs = this.inputs;
+        this.doneCalculating = false;
         this.inputLayer.calc();
 
         for (var i=0; i<this.numOfHiddenLayers;i++){
@@ -78,5 +193,6 @@ export default class Net {
         this.outputLayer.inputs = this.outputLayer.prev.outputs;
         this.outputLayer.calc();
         this.outputs = this.outputLayer.outputs;
+        this.doneCalculating = false;
       }
 }

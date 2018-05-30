@@ -9,13 +9,17 @@
         var numberOfInputs=5;
         var numberOfOutputs=3;
         var numberOfHiddenNeurons= [25, 25];
-        var hiddenAcFnc = [ new B.Sigmoid(1.0), new B.Sigmoid(0.8) ] ;
-        var outputAcFnc = new B.Linear(1.0);
+        var hiddenAcFnc = [ new B.Sigmoid(), new B.Sigmoid() ] ;
+        var outputAcFnc = new B.Sigmoid();
 
         console.log("Creating Neural Network...");
 
-        var net = new B.Net(numberOfInputs, numberOfOutputs,
-            numberOfHiddenNeurons, hiddenAcFnc, outputAcFnc);
+        var net = new B.Net({
+            numOfInputs: 5,
+            numOfOutputs: 3,
+            hiddenLayersLayout: [25, 25],
+            hiddenActivationFnc: [ new B.Sigmoid(), new B.Sigmoid() ],
+            outputActivationFnc: new B.Sigmoid()});
 
         console.log("Neural Network created!");
 
@@ -23,7 +27,7 @@
         var neuralOutput = [];
 
         console.log("Feeding the values [" + neuralInput[0] + " ; " + neuralInput[1] + "] to the neural network");
-        net.inputs = neuralInput;
+        net.setInput(neuralInput);
         net.calc();
 
         neuralOutput= net.outputs;
