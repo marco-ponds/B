@@ -40,6 +40,16 @@ export default class Darwin {
             const net = new Net(this.generateRandomParams());
             this.population.push(net);
         }
+
+        return this.population;
+    }
+
+    getAverageScore(networks) {
+        return networks.reduce((total, net) => {
+            total += net.getScore();
+
+            return total;
+        }, 0) / networks.length;
     }
 
     breed(mother, father) {
