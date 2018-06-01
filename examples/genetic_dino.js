@@ -25,10 +25,35 @@ const path = require('path');
 
 const totalGenerations = 100;
 
-play(network) {
+async play(network) {
     // starts puppeteer, plays dino with this network until the net dies
     // when it dies set score
 
+    // creating a browser
+
+    // creating the page with dino
+
+    // have a "game" loop that get values and put into net
+    // check if network is dead or not
+    // if dead return
+    // if not continue
+
+    while (true || runningForMoreThan5Minutes) {
+        // get inputs
+        // feed networks
+        // network.calc()
+        // get output
+
+        // perform operation using output
+        // check if dead
+        // if dead returns
+    }
+
+    // network is dead here
+
+    // before returning set score for this network
+
+    // close browser here and return
 }
 
 function start() {
@@ -43,19 +68,55 @@ function start() {
 
     let networks = charles.create();
 
-    for (var i = 0; i < totalGenerations; i++) {
-        console.log(`-- Doing generation ${i+1} of ${totalGenerations}`);
+    function evaluate(networks) {
+        // sorting networks using sorting by accuracy,
 
-        // play
-        await networks.forEach((net) => {
-            play(net);
-        });
+        // get the first 5
 
-        Promise.all([
-            play(net)
-        ]).then(() => {
-            console.log(`-- Generationn average ${charles.getAverageScore(networks)}`);
-        })
+        // print their results
 
+        // save params somewhere
     }
+
+    // define a function step that executes one iteration
+    function execute(nets, step) {
+        // for every network create a Promise
+
+        // use Promise.all to resolve all of them
+
+        // when Promise all is resolved get average score
+
+            // get the evolution, overriding networks outside
+
+            // increase step
+            const newStep = step + 1;
+
+            if (step > totalGenerations) {
+                // do something with the result, we're done here
+            } else {
+                // go to next step
+                execute(networks, newStep);
+            }
+    }
+
+    // first round of execution
+    execute(networks, 0);
+
+    // for (var i = 0; i < totalGenerations; i++) {
+    //     console.log(`-- Doing generation ${i+1} of ${totalGenerations}`);
+    //
+    //     // play
+    //     // await networks.forEach((net) => {
+    //     //     play(net);
+    //     // });
+    //     //
+    //     // Promise.all([
+    //     //     play(net)
+    //     // ]).then(() => {
+    //     //     console.log(`-- Generationn average ${charles.getAverageScore(networks)}`);
+    //     // })
+    //
+    //
+    //
+    // }
 }
