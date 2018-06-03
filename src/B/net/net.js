@@ -194,5 +194,7 @@ export default class Net {
         this.outputLayer.calc();
         this.outputs = this.outputLayer.outputs;
         this.doneCalculating = false;
+
+        return this.outputs;
       }
 }

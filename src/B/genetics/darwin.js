@@ -45,6 +45,7 @@ export default class Darwin {
     }
 
     getAverageScore(networks) {
+        console.log('getAverageScore');
         return networks.reduce((total, net) => {
             total += net.getScore();
 
@@ -113,7 +114,9 @@ export default class Darwin {
 
     }
 
-    sortByAccuracy(accuracyA, accuracyB) {
+    sortByAccuracy(netA, netB) {
+        const accuracyA = netA.getScore();
+        const accuracyB = netB.getScore();
 
         if (accuracyA > accuracyB) return -1;
     	if (accuracyA < accuracyB) return 1;
@@ -125,13 +128,13 @@ export default class Darwin {
         // this should run after execution and when every net has a value
 
         // evaluate fitness for every network
-        const fitness = population.map((net) => net.getScore());
+        //const fitness = population.map((net) => net.getScore());
 
         // sort based on scores
-        const sorted = fitness.sort(this.sortByAccuracy);
+        const sorted = population.sort(this.sortByAccuracy);
 
         // get the number we want to keep for next generation
-        const retainedTotal = Math.floor(sorted.lngth * this.retainPercentage);
+        const retainedTotal = Math.floor(sorted.length * this.retainPercentage);
 
         // parents are every network we want to keep
         let parents = sorted.splice(0, retainedTotal);
