@@ -1,5 +1,5 @@
 export const min = (list = []) => {
-    return parseFLoat(Math.min(...list));
+    return parseFloat(Math.min(...list));
 }
 
 export const max = (list = []) => {

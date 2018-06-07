@@ -28,6 +28,9 @@ async function play(network, browser) {
         return (+(new Date()) - startTime) > 300000;
     }
 
+    // make it start
+    await page.keyboard.press('Space');
+
     while (true || !runningForMoreThan5Minutes()) {
         UI.logger.log('running');
         // get inputs
@@ -144,6 +147,8 @@ function evolve(browsers) {
 
     let networks = charles.create();
 
+    UI.updateTable(networks);
+
     function evaluate(networks) {
         UI.logger.log('evaluating');
         // sorting networks using sorting by accuracy,
@@ -166,6 +171,7 @@ function evolve(browsers) {
         promises = nets.map((n, i) => play(n, browsers[i]));
         Promise.all(promises)
         .then(() => {
+            UI.updateTable(nets);
             UI.logger.log('done playing with net '+ nets.length);
             // when Promise all is resolved get average score
             const average = charles.getAverageScore(nets);
@@ -210,4 +216,4 @@ UI.screen.key('q', () => {
     stop();
 });
 
-//start().then(evolve);
+start().then(evolve);
