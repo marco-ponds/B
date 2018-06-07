@@ -4,7 +4,7 @@ const B = require('../dist/B.node');
 
 process.setMaxListeners(Infinity);
 
-async function play(network, browser) {
+const play = (network, browser) => async () => {
     UI.logger.log('creating browser with puppeteer');
     // starts puppeteer, plays dino with this network until the net dies
     //const browser = await puppeteer.launch({headless: true });
@@ -118,7 +118,7 @@ async function play(network, browser) {
 }
 
 const totalBrowsers = 10;
-const totalGenerations = 10;
+const totalGenerations = 50;
 
 let promises = [];
 
@@ -168,7 +168,7 @@ function evolve(browsers) {
         // for every network create a Promise
         UI.logger.log(`-- Doing generation ${step+1} of ${totalGenerations}`);
         // use Promise.all to resolve all of them
-        promises = nets.map((n, i) => play(n, browsers[i]));
+        promises = nets.map((n, i) => play(n, browsers[i])());
         Promise.all(promises)
         .then(() => {
             UI.updateTable(nets);
