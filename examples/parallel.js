@@ -7,7 +7,7 @@ process.setMaxListeners(Infinity);
 let charles;
 
 const play = (networkId, browser) => async () => {
-    console.log('creating browser with puppeteer');
+    UI.logger.log('creating browser with puppeteer');
     // starts puppeteer, plays dino with this network until the net dies
     //const browser = await puppeteer.launch({headless: true });
     const network = charles.getNetwork(networkId);
@@ -18,7 +18,7 @@ const play = (networkId, browser) => async () => {
     await page.setOfflineMode(true);
     await page.reload();
 
-    console.log('created page, lets play');
+    UI.logger.log('created page, lets play');
 
     // when it dies set score
 
@@ -35,7 +35,7 @@ const play = (networkId, browser) => async () => {
     await page.keyboard.press('Space');
 
     while (true || !runningForMoreThan5Minutes()) {
-        console.log('running');
+        UI.logger.log('running');
         // get inputs
         let obstacle = await page.evaluate(() => {
             if (Runner && Runner.instance_) {
@@ -61,7 +61,7 @@ const play = (networkId, browser) => async () => {
             }
         });
 
-        console.log(['got inputs',
+        UI.logger.log(['got inputs',
             speed,
             obstacle.xPos,
             obstacle.yPos,
@@ -82,16 +82,16 @@ const play = (networkId, browser) => async () => {
         ]));
         // network.calc()
         const output = network.calc();
-        console.log('got output from network, ' + output);
+        UI.logger.log('got output from network, ' + output);
         // perform operation using output
         const jump = output[0];
         const duck = output[1];
         if (jump > 0.9) {
-            console.log('jumping');
+            UI.logger.log('jumping');
             await page.keyboard.press('Space');
         }
         if (duck > 0.9) {
-            console.log('ducking');
+            UI.logger.log('ducking');
             await page.keyboard.press('ArrowDown');
         }
         // check if dead
@@ -100,7 +100,7 @@ const play = (networkId, browser) => async () => {
                 return Runner.instance_.crashed;
             }
         });
-        console.log('isDead = ' + isDead);
+        UI.logger.log('isDead = ' + isDead);
         network.data('dead', isDead);
         // if dead returns
         if (isDead) break;
@@ -114,9 +114,10 @@ const play = (networkId, browser) => async () => {
             return Runner.instance_.distanceRan;
         }
     });
-    console.log('score = '+ score);
+    UI.logger.log('score = '+ score);
     network.setScore(score);
     // close browser here and return
+    await page.setOfflineMode(false);
     await page.close();
 }
 
@@ -130,7 +131,7 @@ async function start() {
     let browsers = [];
 
     for (var i=0; i<totalBrowsers; i++) {
-        console.log(`creating ${i+1}`);
+        UI.logger.log(`creating ${i+1}`);
         const browser = await puppeteer.launch({headless: false});
         browsers.push(browser);
     }
@@ -153,7 +154,7 @@ function evolve(browsers) {
     //UI.updateTable(charles.population);
 
     function evaluate() {
-        console.log('evaluating');
+        UI.logger.log('evaluating');
         // sorting networks using sorting by accuracy,
         const sorted = charles.population.sort(charles.sortByAccuracy);
         // get the first 5
@@ -161,24 +162,27 @@ function evolve(browsers) {
 
         // print their results
         const results = top.map((n) => n.getScore());
-        console.log(`-- Results: ${results}`);
+        UI.logger.log(`-- Results: ${results}`);
 
         // save params somewhere
+
+        // kill every broewser
+        browsers.forEach(b => b.close());
     }
 
     // define a function step that executes one iteration
     function execute(step) {
         // for every network create a Promise
-        console.log(`-- Doing generation ${step+1} of ${totalGenerations}`);
+        UI.logger.log(`-- Doing generation ${step+1} of ${totalGenerations}`);
         // use Promise.all to resolve all of them
         promises = charles.population.map((n, i) => play(n.id(), browsers[i])());
         Promise.all(promises)
         .then(() => {
-            //UI.updateTable(charles.population);
-            console.log('done playing with net '+ charles.population);
+            UI.updateTable(charles.population);
+            UI.logger.log('done playing with net '+ charles.population);
             // when Promise all is resolved get average score
             const average = charles.getAverageScore();
-            console.log(`-- Generationn average ${average}`);
+            UI.logger.log(`-- Generationn average ${average}`);
             // increase step
             const newStep = step + 1;
 
@@ -188,7 +192,7 @@ function evolve(browsers) {
             } else {
                 // get the evolution, overriding networks outside
                 charles.evolve();
-                console.log('-- evolution, networks length, '+ charles.population.length);
+                UI.logger.log('-- evolution, networks length, '+ charles.population.length);
                 // go to next step
                 execute(newStep);
             }

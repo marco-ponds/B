@@ -45,12 +45,10 @@ export default class Darwin {
     }
 
     getNetwork(networkId) {
-        console.log(this.population);
         return this.population.filter((n) => n.id() === networkId)[0];
     }
 
     getAverageScore() {
-        console.log('getAverageScore');
         return this.population.reduce((total, net) => {
             total += net.getScore();
 

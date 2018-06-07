@@ -122,6 +122,6 @@ UI.stop.on('press', () => {
 });
 */
 
-//UI.screen.render();
+UI.screen.render();
 
 module.exports = UI;
