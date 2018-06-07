@@ -6,6 +6,25 @@ process.setMaxListeners(Infinity);
 
 let charles;
 
+const getClosestObstacle = (obstacles, tRex) => {
+    if (obstacles.length === 0) {
+        return null;
+    }
+
+    let closest = obstacles[0];
+    let refD = closest.xPos - tRex.xPos;
+
+    obstacles.forEach((o) => {
+        let d = o.xPos - tRex.xPos;
+        if (d < refD && o.xPos > tRex.xPos) {
+            refD = d;
+            closest = o;
+        }
+    });
+
+    return closest;
+}
+
 const play = (networkId, browser) => async () => {
     UI.logger.log('creating browser with puppeteer');
     // starts puppeteer, plays dino with this network until the net dies
@@ -44,15 +63,23 @@ const play = (networkId, browser) => async () => {
 
         UI.logger.log('running');
         // get inputs
-        let obstacle = await page.evaluate(() => {
+
+        const tRex = await page.evaluate(() => {
             if (Runner && Runner.instance_) {
-                return Runner.instance_.horizon.obstacles[0];
+                return Runner.instance_.tRex;
             }
         });
+
+        let obstacles = await page.evaluate(() => {
+            if (Runner && Runner.instance_) {
+                return Runner.instance_.horizon.obstacles;
+            }
+        });
+        let obstacle = getClosestObstacle(obstacles, tRex);
         if (!obstacle) {
             noObstacles++;
 
-            if (noObstacles > 100) break;
+            if (noObstacles > 20) break;
 
             obstacle = {
                 xPos: 999,
@@ -60,11 +87,6 @@ const play = (networkId, browser) => async () => {
                 width: 20
             };
         }
-        const tRex = await page.evaluate(() => {
-            if (Runner && Runner.instance_) {
-                return Runner.instance_.tRex;
-            }
-        });
 
         const speed = await page.evaluate(() => {
             if (Runner && Runner.instance_) {
@@ -100,8 +122,7 @@ const play = (networkId, browser) => async () => {
         if (jump > 0.9) {
             UI.logger.log('jumping');
             await page.keyboard.press('Space');
-        }
-        if (duck > 0.9) {
+        } else if (duck > 0.9) {
             UI.logger.log('ducking');
             await page.keyboard.press('ArrowDown');
         }
@@ -156,8 +177,8 @@ function evolve(browsers) {
         input: 6,
         output: 2,
         maxHiddenLayers: 5,
-        retainPercentage: 0.5,
-        mutationChance: 0.75
+        retainPercentage: 0.75,
+        mutationChance: 0.5
     });
 
     charles.create();
