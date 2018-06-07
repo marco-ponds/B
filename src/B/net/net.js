@@ -13,7 +13,7 @@ export default class Net {
         this.numOfHiddenLayers = hiddenLayersLayout.length;
         this.hiddenActivationFnc = hiddenActivationFnc;
 
-        this._id = '' + +(new Date());
+        this._id = 'net#' + String(Math.random()).slice(2);
 
         // this represents our network's score after execution
         this._score = 0;

@@ -44,13 +44,18 @@ export default class Darwin {
         return this.population;
     }
 
-    getAverageScore(networks) {
+    getNetwork(networkId) {
+        console.log(this.population);
+        return this.population.filter((n) => n.id() === networkId)[0];
+    }
+
+    getAverageScore() {
         console.log('getAverageScore');
-        return networks.reduce((total, net) => {
+        return this.population.reduce((total, net) => {
             total += net.getScore();
 
             return total;
-        }, 0) / networks.length;
+        }, 0) / this.population.length;
     }
 
     breed(mother, father) {
@@ -124,14 +129,14 @@ export default class Darwin {
     	return 0;
     }
 
-    evolve(population = []) {
+    evolve() {
         // this should run after execution and when every net has a value
 
         // evaluate fitness for every network
         //const fitness = population.map((net) => net.getScore());
 
         // sort based on scores
-        const sorted = population.sort(this.sortByAccuracy);
+        const sorted = this.population.sort(this.sortByAccuracy);
 
         // get the number we want to keep for next generation
         const retainedTotal = Math.floor(sorted.length * this.retainPercentage);
@@ -146,7 +151,7 @@ export default class Darwin {
             }
         });
 
-        const desiredLength = population.length - parents.length;
+        const desiredLength = this.population.length - parents.length;
 
         // now creating a new population breeding parents
         let children = [];
@@ -169,6 +174,6 @@ export default class Darwin {
         // now adding children to parents gorup
         parents.concat(children);
 
-        return parents;
+        this.population = parents;
     }
 }

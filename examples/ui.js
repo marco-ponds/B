@@ -44,7 +44,7 @@ UI.updateTable = function(networks) {
             `net #${i}`,
             network.id(),
             network.getScore(),
-            network.data('dead')
+            network.data().dead
         ]);
 
         return acc;
@@ -122,6 +122,6 @@ UI.stop.on('press', () => {
 });
 */
 
-UI.screen.render();
+//UI.screen.render();
 
 module.exports = UI;

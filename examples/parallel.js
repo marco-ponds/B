@@ -4,10 +4,13 @@ const B = require('../dist/B.node');
 
 process.setMaxListeners(Infinity);
 
-const play = (network, browser) => async () => {
-    UI.logger.log('creating browser with puppeteer');
+let charles;
+
+const play = (networkId, browser) => async () => {
+    console.log('creating browser with puppeteer');
     // starts puppeteer, plays dino with this network until the net dies
     //const browser = await puppeteer.launch({headless: true });
+    const network = charles.getNetwork(networkId);
     const page = await browser.newPage();
 
     await page.setViewport({ width: 800, height: 600 });
@@ -15,7 +18,7 @@ const play = (network, browser) => async () => {
     await page.setOfflineMode(true);
     await page.reload();
 
-    UI.logger.log('created page, lets play');
+    console.log('created page, lets play');
 
     // when it dies set score
 
@@ -32,7 +35,7 @@ const play = (network, browser) => async () => {
     await page.keyboard.press('Space');
 
     while (true || !runningForMoreThan5Minutes()) {
-        UI.logger.log('running');
+        console.log('running');
         // get inputs
         let obstacle = await page.evaluate(() => {
             if (Runner && Runner.instance_) {
@@ -58,7 +61,7 @@ const play = (network, browser) => async () => {
             }
         });
 
-        UI.logger.log(['got inputs',
+        console.log(['got inputs',
             speed,
             obstacle.xPos,
             obstacle.yPos,
@@ -79,16 +82,16 @@ const play = (network, browser) => async () => {
         ]));
         // network.calc()
         const output = network.calc();
-        UI.logger.log('got output from network, ' + output);
+        console.log('got output from network, ' + output);
         // perform operation using output
         const jump = output[0];
         const duck = output[1];
         if (jump > 0.9) {
-            UI.logger.log('jumping');
+            console.log('jumping');
             await page.keyboard.press('Space');
         }
         if (duck > 0.9) {
-            UI.logger.log('ducking');
+            console.log('ducking');
             await page.keyboard.press('ArrowDown');
         }
         // check if dead
@@ -97,7 +100,7 @@ const play = (network, browser) => async () => {
                 return Runner.instance_.crashed;
             }
         });
-        UI.logger.log('isDead = ' + isDead);
+        console.log('isDead = ' + isDead);
         network.data('dead', isDead);
         // if dead returns
         if (isDead) break;
@@ -111,7 +114,7 @@ const play = (network, browser) => async () => {
             return Runner.instance_.distanceRan;
         }
     });
-    UI.logger.log('score = '+ score);
+    console.log('score = '+ score);
     network.setScore(score);
     // close browser here and return
     await page.close();
@@ -127,7 +130,7 @@ async function start() {
     let browsers = [];
 
     for (var i=0; i<totalBrowsers; i++) {
-        UI.logger.log(`creating ${i+1}`);
+        console.log(`creating ${i+1}`);
         const browser = await puppeteer.launch({headless: false});
         browsers.push(browser);
     }
@@ -136,7 +139,7 @@ async function start() {
 }
 
 function evolve(browsers) {
-    const charles = new B.Darwin({
+    charles = new B.Darwin({
         count: totalBrowsers,
         input: 6,
         output: 2,
@@ -145,55 +148,55 @@ function evolve(browsers) {
         mutationChance: 0.75
     });
 
-    let networks = charles.create();
+    charles.create();
 
-    UI.updateTable(networks);
+    //UI.updateTable(charles.population);
 
-    function evaluate(networks) {
-        UI.logger.log('evaluating');
+    function evaluate() {
+        console.log('evaluating');
         // sorting networks using sorting by accuracy,
-        const sorted = networks.sort(charles.sortByAccuracy);
+        const sorted = charles.population.sort(charles.sortByAccuracy);
         // get the first 5
         const top = sorted.slice(0, 5);
 
         // print their results
         const results = top.map((n) => n.getScore());
-        UI.logger.log(`-- Results: ${results}`);
+        console.log(`-- Results: ${results}`);
 
         // save params somewhere
     }
 
     // define a function step that executes one iteration
-    function execute(nets, step) {
+    function execute(step) {
         // for every network create a Promise
-        UI.logger.log(`-- Doing generation ${step+1} of ${totalGenerations}`);
+        console.log(`-- Doing generation ${step+1} of ${totalGenerations}`);
         // use Promise.all to resolve all of them
-        promises = nets.map((n, i) => play(n, browsers[i])());
+        promises = charles.population.map((n, i) => play(n.id(), browsers[i])());
         Promise.all(promises)
         .then(() => {
-            UI.updateTable(nets);
-            UI.logger.log('done playing with net '+ nets.length);
+            //UI.updateTable(charles.population);
+            console.log('done playing with net '+ charles.population);
             // when Promise all is resolved get average score
-            const average = charles.getAverageScore(nets);
-            UI.logger.log(`-- Generationn average ${average}`);
+            const average = charles.getAverageScore();
+            console.log(`-- Generationn average ${average}`);
             // increase step
             const newStep = step + 1;
 
             if (newStep > totalGenerations) {
                 // do something with the result, we're done here
-                evaluate(networks);
+                evaluate();
             } else {
                 // get the evolution, overriding networks outside
-                networks = charles.evolve(networks);
-                UI.logger.log('-- evolution, networks length, '+ networks.length);
+                charles.evolve();
+                console.log('-- evolution, networks length, '+ charles.population.length);
                 // go to next step
-                execute(networks, newStep);
+                execute(newStep);
             }
         });
     }
 
     // first round of execution
-    execute(networks, 0);
+    execute(0);
 }
 
 function stop() {
