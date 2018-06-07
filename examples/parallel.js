@@ -30,11 +30,18 @@ const play = (networkId, browser) => async () => {
     const runningForMoreThan5Minutes = function() {
         return (+(new Date()) - startTime) > 300000;
     }
+    const holdOnFor = (timeout) => new Promise((resolve) => {
+        setTimeout(resolve, timeout);
+    });
+    let noObstacles = 0;
 
     // make it start
     await page.keyboard.press('Space');
 
     while (true || !runningForMoreThan5Minutes()) {
+
+        await holdOnFor(250);
+
         UI.logger.log('running');
         // get inputs
         let obstacle = await page.evaluate(() => {
@@ -43,6 +50,10 @@ const play = (networkId, browser) => async () => {
             }
         });
         if (!obstacle) {
+            noObstacles++;
+
+            if (noObstacles > 100) break;
+
             obstacle = {
                 xPos: 999,
                 yPos: 20,

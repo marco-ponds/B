@@ -13,7 +13,7 @@ export default class Net {
         this.numOfHiddenLayers = hiddenLayersLayout.length;
         this.hiddenActivationFnc = hiddenActivationFnc;
 
-        this._id = 'net#' + String(Math.random()).slice(2);
+        this._id = 'net#' + String(Math.random()).slice(2, 8);
 
         // this represents our network's score after execution
         this._score = 0;
@@ -124,7 +124,7 @@ export default class Net {
         const values = this.hiddenLayersLayout;
         let newLayout = Array.from({length: Math.floor(Math.random() * values.length) + 5}).forEach((el, i) => {
             if (values[i]) {
-                el[i] = values[i] + ( Math.random() * 2 ) -1;
+                el[i] = values[i] + Math.floor(( Math.random() * 4 ) - 2);
             } else {
                 el[i] = Math.floor(Math.random() * 500 ) + 1;
             }

@@ -14,8 +14,6 @@ UI.grid = new contrib.grid({
 UI.logger = UI.grid.set(0, 0, 12, 5, contrib.log, {
     fg: 'green',
     label: 'Log',
-    height: '100%',
-    width: '100%',
     border: {type: "line", fg: "cyan"}
 });
 
@@ -26,8 +24,6 @@ UI.table = UI.grid.set(0, 5, 12, 7, contrib.table, {
     selectedBg: 'blue',
     interactive: true,
     label: 'Networks',
-    width: '30%',
-    height: '30%',
     border: {type: "line", fg: "cyan"},
     columnSpacing: 10,
     columnWidth: [16, 12, 12, 12]
