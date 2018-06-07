@@ -49,8 +49,15 @@ async function play(network, browser) {
             }
         });
 
+        const speed = await page.evaluate(() => {
+            if (Runner && Runner.instance_) {
+                return Runner.instance_.currentSpeed;
+            }
+        });
+
         UI.logger.log(['got inputs',
-            obstacle.xPos +
+            speed,
+            obstacle.xPos,
             obstacle.yPos,
             obstacle.width,
             tRex.xPos,
@@ -59,13 +66,14 @@ async function play(network, browser) {
         );
 
         // feed networks
-        network.setInput([
+        network.setInput(B.util.normalise([
+            speed,
             obstacle.xPos,
             obstacle.yPos,
             obstacle.width,
             tRex.xPos,
             tRex.yPos
-        ]);
+        ]));
         // network.calc()
         const output = network.calc();
         UI.logger.log('got output from network, ' + output);
@@ -87,6 +95,7 @@ async function play(network, browser) {
             }
         });
         UI.logger.log('isDead = ' + isDead);
+        network.data('dead', isDead);
         // if dead returns
         if (isDead) break;
     }
@@ -105,8 +114,8 @@ async function play(network, browser) {
     await page.close();
 }
 
-const total = 10;
-const totalGenerations = 2;
+const totalBrowsers = 10;
+const totalGenerations = 10;
 
 let promises = [];
 
@@ -114,7 +123,7 @@ async function start() {
 
     let browsers = [];
 
-    for (var i=0; i<total; i++) {
+    for (var i=0; i<totalBrowsers; i++) {
         UI.logger.log(`creating ${i+1}`);
         const browser = await puppeteer.launch({headless: false});
         browsers.push(browser);
@@ -125,8 +134,8 @@ async function start() {
 
 function evolve(browsers) {
     const charles = new B.Darwin({
-        count: total,
-        input: 5,
+        count: totalBrowsers,
+        input: 6,
         output: 2,
         maxHiddenLayers: 5,
         retainPercentage: 0.5,
@@ -185,9 +194,9 @@ function stop() {
     process.exit(0);
 }
 
+/*
 UI.form.on('submit', (data) => {
   UI.form.setContent('started.');
-  start().then(evolve);
   UI.screen.render();
 });
 
@@ -195,7 +204,10 @@ UI.form.on('reset', (data) => {
   UI.form.setContent('stopped.');
   UI.screen.render();
 });
+*/
 
 UI.screen.key('q', () => {
     stop();
 });
+
+//start().then(evolve);

@@ -11,7 +11,7 @@ UI.grid = new contrib.grid({
     screen: UI.screen
 });
 
-UI.logger = UI.grid.set(0, 0, 12, 5, contrib.log , {
+UI.logger = UI.grid.set(0, 0, 12, 5, contrib.log, {
     fg: 'green',
     label: 'Log',
     height: '100%',
@@ -19,6 +19,42 @@ UI.logger = UI.grid.set(0, 0, 12, 5, contrib.log , {
     border: {type: "line", fg: "cyan"}
 });
 
+UI.table = UI.grid.set(0, 5, 12, 7, contrib.table, {
+    keys: true,
+    fg: 'white',
+    selectedFg: 'white',
+    selectedBg: 'blue',
+    interactive: true,
+    label: 'Networks',
+    width: '30%',
+    height: '30%',
+    border: {type: "line", fg: "cyan"},
+    columnSpacing: 10,
+    columnWidth: [16, 12, 12, 12]
+});
+
+UI.table.focus();
+
+
+UI.updateTable = function(networks) {
+    const headers = ['Name', 'id', 'score', 'dead?'];
+
+    const data = networks.reduce((acc, network, i) => {
+        acc.push([
+            `net #${i}`,
+            network.id(),
+            network.getScore(),
+            network.data('dead')
+        ]);
+
+        return acc;
+    }, []);
+
+    UI.table.setData({ headers, data });
+    UI.screen.render();
+}
+
+/*
 UI.form = UI.grid.set(0, 5, 4, 5, blessed.form, {
   parent: UI.screen,
   keys: true,
@@ -84,6 +120,7 @@ UI.start.on('press', () => {
 UI.stop.on('press', () => {
     UI.form.reset();
 });
+*/
 
 UI.screen.render();
 

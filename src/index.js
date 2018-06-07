@@ -12,6 +12,7 @@ import DeltaRule from './B/training/deltarule';
 import ErrorMeasurement from './B/training/errorMeasurement';
 import PT from './B/training/trainer';
 import Darwin from './B/genetics/darwin';
+import * as util from './B/math/util';
 
 export {
     Neuron,
@@ -27,5 +28,6 @@ export {
     DeltaRule,
     ErrorMeasurement,
     PT,
-    Darwin
+    Darwin,
+    util
 }

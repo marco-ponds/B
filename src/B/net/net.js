@@ -18,6 +18,9 @@ export default class Net {
         // this represents our network's score after execution
         this._score = 0;
 
+        // additional data
+        this._data = {};
+
         // doneCalculating is set to false before calculation and true after calculation
         this.doneCalculating = false;
 
@@ -36,6 +39,14 @@ export default class Net {
 
     id() {
         return this._id;
+    }
+
+    data(key, value) {
+        if (key && value) {
+            return this._data[key] = value;
+        }
+
+        return this._data;
     }
 
     isEqual(net) {
