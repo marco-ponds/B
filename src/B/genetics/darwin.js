@@ -19,10 +19,11 @@ export default class Darwin {
     }
 
     generateRandomParams() {
-        const hiddenLayersNum = Math.floor(Math.random() * this.maxHiddenLayers) + this.minHiddenLayers;
-        const hiddenLayers = Array.from({
-            length: hiddenLayersNum
-        }, () => Math.floor(Math.random() * this.maxNeuronsPerLayer ) + this.minNeuronsPerLayers);
+        //const hiddenLayersNum = Math.floor(Math.random() * this.maxHiddenLayers) + this.minHiddenLayers;
+        //const hiddenLayers = Array.from({
+        //    length: hiddenLayersNum
+        //}, () => Math.floor(Math.random() * this.maxNeuronsPerLayer ) + this.minNeuronsPerLayers);
+        const hiddenLayers = [16, 16];
         const hiddenActivationFnc = hiddenLayers.map((layer) => new Sigmoid());
 
         return {
@@ -101,7 +102,7 @@ export default class Darwin {
     }
 
     mutate(net) {
-        const key = ['hiddenLayersLayout', 'weights', 'bias'][Math.floor(Math.random() * 3)];;
+        const key = ['weights', 'bias'][Math.floor(Math.random() * 3)];;
 
         switch(key) {
             case 'hiddenLayersLayout':

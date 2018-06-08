@@ -57,6 +57,8 @@ const play = (networkId, browser) => async () => {
     // make it start
     await page.keyboard.press('Space');
 
+    await holdOnFor(2000);
+
     while (true || !runningForMoreThan5Minutes()) {
 
         await holdOnFor(250);
@@ -148,13 +150,15 @@ const play = (networkId, browser) => async () => {
     });
     UI.logger.log('score = '+ score);
     network.setScore(score);
+
+    //UI.updateTable(charles.population);
     // close browser here and return
     await page.setOfflineMode(false);
     await page.close();
 }
 
 const totalBrowsers = 10;
-const totalGenerations = 50;
+const totalGenerations = 100;
 
 let promises = [];
 
@@ -178,7 +182,7 @@ function evolve(browsers) {
         output: 2,
         maxHiddenLayers: 5,
         retainPercentage: 0.75,
-        mutationChance: 0.5
+        mutationChance: 0.3
     });
 
     charles.create();

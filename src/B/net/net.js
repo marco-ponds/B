@@ -60,7 +60,7 @@ export default class Net {
 
     getParams() {
         return {
-            hiddenLayersLayout: this.hiddenLayersLayout,
+            //hiddenLayersLayout: this.hiddenLayersLayout,
             hiddenActivationFnc: this.hiddenActivationFnc,
             outputActivationFnc: this.outputActivationFnc,
             weights: this.getWeights(),
