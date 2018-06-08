@@ -26,7 +26,6 @@ const getClosestObstacle = (obstacles, tRex) => {
 }
 
 const play = (networkId, browser) => async () => {
-    UI.logger.log('creating browser with puppeteer');
     // starts puppeteer, plays dino with this network until the net dies
     //const browser = await puppeteer.launch({headless: true });
     const network = charles.getNetwork(networkId);
@@ -36,8 +35,6 @@ const play = (networkId, browser) => async () => {
     await page.goto('https://google.com');
     await page.setOfflineMode(true);
     await page.reload();
-
-    UI.logger.log('created page, lets play');
 
     // when it dies set score
 
@@ -57,13 +54,12 @@ const play = (networkId, browser) => async () => {
     // make it start
     await page.keyboard.press('Space');
 
-    await holdOnFor(2000);
+    await holdOnFor(4000);
 
     while (true || !runningForMoreThan5Minutes()) {
 
         await holdOnFor(250);
 
-        UI.logger.log('running');
         // get inputs
 
         const tRex = await page.evaluate(() => {
@@ -96,16 +92,6 @@ const play = (networkId, browser) => async () => {
             }
         });
 
-        UI.logger.log(['got inputs',
-            speed,
-            obstacle.xPos,
-            obstacle.yPos,
-            obstacle.width,
-            tRex.xPos,
-            tRex.yPos,
-            network].join(' ')
-        );
-
         // feed networks
         network.setInput(B.util.normalise([
             speed,
@@ -116,16 +102,23 @@ const play = (networkId, browser) => async () => {
             tRex.yPos
         ]));
         // network.calc()
-        const output = network.calc();
-        UI.logger.log('got output from network, ' + output);
+        const output = network.calc()[0];
         // perform operation using output
-        const jump = output[0];
-        const duck = output[1];
-        if (jump > 0.9) {
-            UI.logger.log('jumping');
+        // const jump = output[0];
+        // const duck = output[1];
+        // if (jump > 0.9) {
+        //     UI.logger.log('jumping');
+        //     await page.keyboard.press('Space');
+        // } else if (duck > 0.9) {
+        //     UI.logger.log('ducking');
+        //     await page.keyboard.press('ArrowDown');
+        // }
+
+        if (output > 0.9) {
+            // UI.logger.log('jumping');
             await page.keyboard.press('Space');
-        } else if (duck > 0.9) {
-            UI.logger.log('ducking');
+        } else {
+            // UI.logger.log('ducking');
             await page.keyboard.press('ArrowDown');
         }
         // check if dead
@@ -134,7 +127,6 @@ const play = (networkId, browser) => async () => {
                 return Runner.instance_.crashed;
             }
         });
-        UI.logger.log('isDead = ' + isDead);
         network.data('dead', isDead);
         // if dead returns
         if (isDead) break;
@@ -148,7 +140,6 @@ const play = (networkId, browser) => async () => {
             return Runner.instance_.distanceRan;
         }
     });
-    UI.logger.log('score = '+ score);
     network.setScore(score);
 
     //UI.updateTable(charles.population);
@@ -167,7 +158,7 @@ async function start() {
     let browsers = [];
 
     for (var i=0; i<totalBrowsers; i++) {
-        UI.logger.log(`creating ${i+1}`);
+        UI.logger.log(`- creating ${i+1} browser`);
         const browser = await puppeteer.launch({headless: false});
         browsers.push(browser);
     }
@@ -179,7 +170,7 @@ function evolve(browsers) {
     charles = new B.Darwin({
         count: totalBrowsers,
         input: 6,
-        output: 2,
+        output: 1,
         maxHiddenLayers: 5,
         retainPercentage: 0.75,
         mutationChance: 0.3
@@ -190,7 +181,6 @@ function evolve(browsers) {
     //UI.updateTable(charles.population);
 
     function evaluate() {
-        UI.logger.log('evaluating');
         // sorting networks using sorting by accuracy,
         const sorted = charles.population.sort(charles.sortByAccuracy);
         // get the first 5
@@ -215,10 +205,10 @@ function evolve(browsers) {
         Promise.all(promises)
         .then(() => {
             UI.updateTable(charles.population);
-            UI.logger.log('done playing with net '+ charles.population);
             // when Promise all is resolved get average score
             const average = charles.getAverageScore();
             UI.logger.log(`-- Generationn average ${average}`);
+            UI.updateGraph(totalGenerations, average);
             // increase step
             const newStep = step + 1;
 
@@ -242,18 +232,6 @@ function evolve(browsers) {
 function stop() {
     process.exit(0);
 }
-
-/*
-UI.form.on('submit', (data) => {
-  UI.form.setContent('started.');
-  UI.screen.render();
-});
-
-UI.form.on('reset', (data) => {
-  UI.form.setContent('stopped.');
-  UI.screen.render();
-});
-*/
 
 UI.screen.key('q', () => {
     stop();

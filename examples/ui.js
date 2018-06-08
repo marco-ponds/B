@@ -12,19 +12,19 @@ UI.grid = new contrib.grid({
 });
 
 UI.logger = UI.grid.set(0, 0, 12, 5, contrib.log, {
-    fg: 'green',
+    fg: 'white',
     label: 'Log',
-    border: {type: "line", fg: "cyan"}
+    border: {type: "line", fg: "white"}
 });
 
-UI.table = UI.grid.set(0, 5, 12, 7, contrib.table, {
+UI.table = UI.grid.set(0, 5, 6, 7, contrib.table, {
     keys: true,
     fg: 'white',
     selectedFg: 'white',
     selectedBg: 'blue',
     interactive: true,
     label: 'Networks',
-    border: {type: "line", fg: "cyan"},
+    border: {type: "line", fg: "white"},
     columnSpacing: 10,
     columnWidth: [16, 12, 12, 12]
 });
@@ -50,73 +50,27 @@ UI.updateTable = function(networks) {
     UI.screen.render();
 }
 
-/*
-UI.form = UI.grid.set(0, 5, 4, 5, blessed.form, {
-  parent: UI.screen,
-  keys: true,
-  content: 'Game'
+UI.graph = UI.grid.set(6, 5, 6, 7, contrib.line, {
+    xPadding: 1,
+    label: 'Average Score',
+    numYLabels: 100
 });
 
-UI.start = blessed.button({
-  parent: UI.form,
-  mouse: true,
-  keys: true,
-  shrink: true,
-  padding: {
-    left: 1,
-    right: 1
-  },
-  width: 15,
-  height: 2,
-  left: 10,
-  shrink: true,
-  name: 'start',
-  content: 'start',
-  style: {
-    bg: 'blue',
-    focus: {
-      bg: 'red'
-    },
-    hover: {
-      bg: 'red'
-    }
-  }
-});
 
-UI.stop = blessed.button({
-  parent: UI.form,
-  mouse: true,
-  keys: true,
-  shrink: true,
-  padding: {
-    left: 1,
-    right: 1
-  },
-  width: 15,
-  height: 2,
-  left: 30,
-  shrink: true,
-  name: 'stop',
-  content: 'stop',
-  style: {
-    bg: 'blue',
-    focus: {
-      bg: 'red'
-    },
-    hover: {
-      bg: 'red'
-    }
-  }
-});
-
-UI.start.on('press', () => {
-    UI.form.submit();
-});
-
-UI.stop.on('press', () => {
-    UI.form.reset();
-});
-*/
+let data = [];
+UI.updateGraph = function(totalGenerations, newAverage) {
+    data.push(newAverage);
+    UI.graph.setData([
+        {
+            title: 'score',
+            x: Array.from({length: totalGenerations}).map((n, i) => `${i}` ),
+            y: data,
+            style: {
+                line: 'blue'
+            }
+        }
+    ])
+}
 
 UI.screen.render();
 
