@@ -1,28 +1,28 @@
 const puppeteer = require('puppeteer');
 const UI = require('./ui');
 const B = require('../dist/B.node');
+const fs = require('fs');
+
 
 process.setMaxListeners(Infinity);
 
 let charles;
+let generationStep = 0;
 
-const getClosestObstacle = (obstacles, tRex) => {
+const getClosestObstacles = (obstacles, tRex) => {
     if (obstacles.length === 0) {
-        return null;
+        return [];
     }
 
-    let closest = obstacles[0];
-    let refD = closest.xPos - tRex.xPos;
-
-    obstacles.forEach((o) => {
-        let d = o.xPos - tRex.xPos;
-        if (d < refD && o.xPos > tRex.xPos) {
-            refD = d;
-            closest = o;
-        }
+    return obstacles.filter((o) => o.xPos > tRex.xPos).slice(0, 2);
+}
+function storeNet(net, generation) {
+    const filename = `data/${net.id()}_${generation}_${Math.floor(net.getScore())}.json`;
+    const content = net.toJSON();
+    console.log(content);
+    fs.writeFile(filename, net.toJSON(), 'utf8', function(err) {
+        console.log(err);
     });
-
-    return closest;
 }
 
 const play = (networkId, browser) => async () => {
@@ -58,7 +58,7 @@ const play = (networkId, browser) => async () => {
 
     while (true || !runningForMoreThan5Minutes()) {
 
-        await holdOnFor(250);
+        await holdOnFor(150);
 
         // get inputs
 
@@ -73,17 +73,19 @@ const play = (networkId, browser) => async () => {
                 return Runner.instance_.horizon.obstacles;
             }
         });
-        let obstacle = getClosestObstacle(obstacles, tRex);
-        if (!obstacle) {
+        let closeObstacles = getClosestObstacles(obstacles, tRex);
+        const defaultObstacle = {
+            xPos: 500,
+            yPos: 20,
+            width: 20
+        };
+        let firstObstacle = closeObstacles[0] || defaultObstacle;
+        let secondObstacle = closeObstacles[1] || defaultObstacle;
+
+        if (!closeObstacles.length) {
             noObstacles++;
 
             if (noObstacles > 20) break;
-
-            obstacle = {
-                xPos: 999,
-                yPos: 20,
-                width: 20
-            };
         }
 
         const speed = await page.evaluate(() => {
@@ -95,25 +97,30 @@ const play = (networkId, browser) => async () => {
         // feed networks
         network.setInput(B.util.normalise([
             speed,
-            obstacle.xPos,
-            obstacle.yPos,
-            obstacle.width,
-            tRex.xPos,
-            tRex.yPos
+            firstObstacle.xPos,
+            firstObstacle.yPos,
+            firstObstacle.width,
+            //secondObstacle.xPos,
+            //secondObstacle.yPos,
+            //secondObstacle.width,
+            //tRex.xPos,
+            //tRex.yPos
         ]));
         // network.calc()
-        const output = network.calc()[0];
+        const output = network.calc();
         // perform operation using output
-        // const jump = output[0];
-        // const duck = output[1];
-        // if (jump > 0.9) {
-        //     UI.logger.log('jumping');
-        //     await page.keyboard.press('Space');
-        // } else if (duck > 0.9) {
-        //     UI.logger.log('ducking');
-        //     await page.keyboard.press('ArrowDown');
-        // }
 
+        const jump = output[0];
+        const duck = output[1];
+        if (jump > 0.9) {
+        //     UI.logger.log('jumping');
+            await page.keyboard.press('Space');
+        } else if (duck > 0.9) {
+        //     UI.logger.log('ducking');
+            await page.keyboard.press('ArrowDown');
+        }
+
+        /*
         if (output > 0.9) {
             // UI.logger.log('jumping');
             await page.keyboard.press('Space');
@@ -121,12 +128,15 @@ const play = (networkId, browser) => async () => {
             // UI.logger.log('ducking');
             await page.keyboard.press('ArrowDown');
         }
+        */
+
         // check if dead
         const isDead = await page.evaluate(() => {
             if (Runner && Runner.instance_) {
                 return Runner.instance_.crashed;
             }
         });
+
         network.data('dead', isDead);
         // if dead returns
         if (isDead) break;
@@ -146,6 +156,8 @@ const play = (networkId, browser) => async () => {
     // close browser here and return
     await page.setOfflineMode(false);
     await page.close();
+
+    storeNet(network, generationStep);
 }
 
 const totalBrowsers = 10;
@@ -169,10 +181,10 @@ async function start() {
 function evolve(browsers) {
     charles = new B.Darwin({
         count: totalBrowsers,
-        input: 6,
-        output: 1,
+        input: 4,
+        output: 2,
         maxHiddenLayers: 5,
-        retainPercentage: 0.75,
+        retainPercentage: 0.8,
         mutationChance: 0.3
     });
 
@@ -197,9 +209,9 @@ function evolve(browsers) {
     }
 
     // define a function step that executes one iteration
-    function execute(step) {
+    function execute() {
         // for every network create a Promise
-        UI.logger.log(`-- Doing generation ${step+1} of ${totalGenerations}`);
+        UI.logger.log(`-- Doing generation ${generationStep+1} of ${totalGenerations}`);
         // use Promise.all to resolve all of them
         promises = charles.population.map((n, i) => play(n.id(), browsers[i])());
         Promise.all(promises)
@@ -210,9 +222,10 @@ function evolve(browsers) {
             UI.logger.log(`-- Generationn average ${average}`);
             UI.updateGraph(totalGenerations, average);
             // increase step
-            const newStep = step + 1;
+            //const newStep = step + 1;
+            generationStep++;
 
-            if (newStep > totalGenerations) {
+            if (generationStep > totalGenerations) {
                 // do something with the result, we're done here
                 evaluate();
             } else {
@@ -220,13 +233,13 @@ function evolve(browsers) {
                 charles.evolve();
                 UI.logger.log('-- evolution, networks length, '+ charles.population.length);
                 // go to next step
-                execute(newStep);
+                execute();
             }
         });
     }
 
     // first round of execution
-    execute(0);
+    execute();
 }
 
 function stop() {

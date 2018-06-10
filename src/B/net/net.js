@@ -28,8 +28,8 @@ export default class Net {
         this.inputLayer = new InputLayer(this.numOfInputs);
         this.inputLayer.init();
 
-        this.inputs = new Array(this.numOfInputs);
-        this.outputs = new Array(this.numOfOutputs);
+        this.inputs = Array.from({length: this.numOfInputs});
+        this.outputs = Array.from({length: this.numOfOutputs});
 
         this.outputAcFnc = outputActivationFnc;
 
@@ -60,9 +60,9 @@ export default class Net {
 
     getParams() {
         return {
-            //hiddenLayersLayout: this.hiddenLayersLayout,
+            hiddenLayersLayout: this.hiddenLayersLayout,
             hiddenActivationFnc: this.hiddenActivationFnc,
-            outputActivationFnc: this.outputActivationFnc,
+            outputActivationFnc: this.outputAcFnc,
             weights: this.getWeights(),
             bias: this.getBias()
         }
@@ -207,5 +207,14 @@ export default class Net {
         this.doneCalculating = false;
 
         return this.outputs;
-      }
+    }
+
+    toJSON() {
+        const params = this.getParams();
+        return JSON.stringify({
+            w: params.weights,
+            b: params.bias,
+            l: params.hiddenLayersLayout
+        });
+    }
 }

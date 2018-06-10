@@ -6,6 +6,7 @@ import HiddenLayer from './B/net/hiddenlayer';
 import Net from './B/net/net';
 import ActivationFunction from './B/math/activationfunction';
 import Sigmoid from './B/math/sigmoid';
+import Rectifier from './B/math/rectifier';
 import Linear from './B/math/linear';
 import Hyperthan from './B/math/hypertan';
 import DeltaRule from './B/training/deltarule';

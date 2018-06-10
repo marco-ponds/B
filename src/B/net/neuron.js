@@ -4,17 +4,15 @@ export default class Neuron {
         this.output = undefined;
 
         this.numOfInputs = numOfInputs;
-        this.weights = new Array(this.numOfInputs);
-        this.inputs = new Array(this.numOfInputs);
+        this.weights = Array(this.numOfInputs);
+        this.inputs = Array(this.numOfInputs).fill(0);
         this.bias = Math.random();
         this.activationFunction = activationFunction;
     }
 
     init() {
         for (var i=0; i <= this.numOfInputs; i++) {
-
-            const newWeight = Math.random();
-            this.weights[i] = newWeight;
+            this.weights[i] = Math.random();;
         }
     }
 
@@ -28,7 +26,7 @@ export default class Neuron {
 
     mutateWeights() {
         for (var i=0; i <= this.weights.length; i++) {
-            this.weights[i] += (( Math.random() * 2 ) -1) / 400;
+            this.weights[i] += (( Math.random() * 2 ) -1) / 1000;
         }
     }
 
@@ -39,7 +37,7 @@ export default class Neuron {
     }
 
     mutateBias() {
-        this.bias += (( Math.random() * 2 ) -1) / 400;
+        this.bias += (( Math.random() * 2 ) -1) / 1000;
     }
 
     calc() {

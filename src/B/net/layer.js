@@ -4,14 +4,14 @@ export default class Layer {
 
     constructor(numOfInputs, numOfNeurons = 0, activationFnc = { calc: f => f}) {
         this.numOfNeurons = numOfNeurons;
-        this.neurons = new Array(this.numOfNeurons);
+        this.neurons = Array.from({ length: this.numOfNeurons });
 
         this.numOfInputs = numOfInputs;
-        this.inputs = new Array(this.numOfInputs);
+        this.inputs = Array.from({length: this.numOfInputs});
 
         this.activationFnc = activationFnc;
 
-        this.outputs = new Array(this.numOfNeurons);
+        this.outputs = Array.from({length: this.numOfNeurons});
 
         this.prev = undefined; // previous layer
         this.next = undefined; // next layer

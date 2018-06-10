@@ -6,6 +6,7 @@ export default class Sigmoid extends ActivationFunction {
         if (!isNaN(x)) {
             return 1.0 / ( 1.0 + Math.exp(-x));
         }
+        console.log('isNAN');
         return 1;
     }
 

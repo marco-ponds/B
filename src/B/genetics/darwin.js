@@ -1,4 +1,5 @@
 import Sigmoid from '../math/sigmoid';
+import Rectifier from '../math/rectifier';
 import Net from '../net/net';
 
 export default class Darwin {
@@ -23,13 +24,13 @@ export default class Darwin {
         //const hiddenLayers = Array.from({
         //    length: hiddenLayersNum
         //}, () => Math.floor(Math.random() * this.maxNeuronsPerLayer ) + this.minNeuronsPerLayers);
-        const hiddenLayers = [16, 16];
-        const hiddenActivationFnc = hiddenLayers.map((layer) => new Sigmoid());
+        const hiddenLayersLayout = [3];
+        const hiddenActivationFnc = hiddenLayersLayout.map((layer) => new Sigmoid());
 
         return {
             numOfInputs: this.input,
             numOfOutputs: this.output,
-            hiddenLayers,
+            hiddenLayersLayout,
             hiddenActivationFnc,
             outputActivationFnc: new Sigmoid()
         };
@@ -84,6 +85,7 @@ export default class Darwin {
             ...secondChildParams
         });
 
+
         firstNet.updateBias(firstChildParams.bias);
         firstNet.updateWeights(firstChildParams.weights);
         secondNet.updateBias(secondChildParams.bias);
@@ -102,7 +104,7 @@ export default class Darwin {
     }
 
     mutate(net) {
-        const key = ['weights', 'bias'][Math.floor(Math.random() * 3)];;
+        const key = ['weights', 'bias'][Math.floor(Math.random() * 2)];;
 
         switch(key) {
             case 'hiddenLayersLayout':
@@ -135,7 +137,7 @@ export default class Darwin {
         //const fitness = population.map((net) => net.getScore());
 
         // sort based on scores
-        const sorted = this.population.sort(this.sortByAccuracy);
+        const sorted = this.population.sort(this.sortByAccuracy).slice(0, this.population.length);
 
         // get the number we want to keep for next generation
         const retainedTotal = Math.floor(sorted.length * this.retainPercentage);
