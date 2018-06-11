@@ -104,18 +104,18 @@ export default class Net {
         this.hiddenLayers.map((layer, i) => layer.neurons.map((n, j) => n.updateBias(hidden[i][j])));
     }
 
-    mutateBias() {
-        this.inputLayer.neurons.map((n, i) => n.mutateBias());
-        this.outputLayer.neurons.map((n, i) => n.mutateBias());
-        this.hiddenLayers.map((layer) => layer.neurons.map((n) => n.mutateBias()));
+    mutateBias(mutationChance) {
+        this.inputLayer.neurons.map((n, i) => n.mutateBias(mutationChance));
+        this.outputLayer.neurons.map((n, i) => n.mutateBias(mutationChance));
+        this.hiddenLayers.map((layer) => layer.neurons.map((n) => n.mutateBias(mutationChance)));
 
         return this;
     }
 
-    mutateWeights() {
-        this.inputLayer.neurons.map((n, i) => n.mutateWeights());
-        this.outputLayer.neurons.map((n, i) => n.mutateWeights());
-        this.hiddenLayers.map((layer) => layer.neurons.map((n) => n.mutateWeights()));
+    mutateWeights(mutationChance) {
+        this.inputLayer.neurons.map((n, i) => n.mutateWeights(mutationChance));
+        this.outputLayer.neurons.map((n, i) => n.mutateWeights(mutationChance));
+        this.hiddenLayers.map((layer) => layer.neurons.map((n) => n.mutateWeights(mutationChance)));
 
         return this;
     }

@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 const UI = require('./ui');
 const B = require('../dist/B.node');
 const fs = require('fs');
-
+const path = require('path');
 
 process.setMaxListeners(Infinity);
 
@@ -16,13 +16,15 @@ const getClosestObstacles = (obstacles, tRex) => {
 
     return obstacles.filter((o) => o.xPos > tRex.xPos).slice(0, 2);
 }
-function storeNet(net, generation) {
-    const filename = `data/${net.id()}_${generation}_${Math.floor(net.getScore())}.json`;
-    const content = net.toJSON();
-    console.log(content);
-    fs.writeFile(filename, net.toJSON(), 'utf8', function(err) {
-        console.log(err);
-    });
+function storeNet(generation) {
+    return function(net) {
+        const filename = path.join(__dirname, `data/${net.id()}_${generation}_${Math.floor(net.getScore())}.json`);
+        const content = net.toJSON();
+        console.log(content);
+        fs.writeFile(filename, net.toJSON(), 'utf8', function(err) {
+            console.log(err);
+        });
+    }
 }
 
 const play = (networkId, browser) => async () => {
@@ -46,9 +48,11 @@ const play = (networkId, browser) => async () => {
     const runningForMoreThan5Minutes = function() {
         return (+(new Date()) - startTime) > 300000;
     }
+
     const holdOnFor = (timeout) => new Promise((resolve) => {
         setTimeout(resolve, timeout);
     });
+
     let noObstacles = 0;
 
     // make it start
@@ -217,6 +221,7 @@ function evolve(browsers) {
         Promise.all(promises)
         .then(() => {
             UI.updateTable(charles.population);
+            charles.population.map(storeNet(generationStep));
             // when Promise all is resolved get average score
             const average = charles.getAverageScore();
             UI.logger.log(`-- Generationn average ${average}`);

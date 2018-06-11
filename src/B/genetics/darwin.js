@@ -92,31 +92,53 @@ export default class Darwin {
         secondNet.updateWeights(secondChildParams.weights)
 
         // now we introduce random mutation
-        if (this.mutationChance > Math.random()) {
-            firstNet = this.mutate(firstNet) || firstNet;
-            secondNet = his.mutate(secondNet) || secondNet;
-        }
+        // if (this.mutationChance > Math.random()) {
+        //     firstNet = this.mutate(firstNet) || firstNet;
+        //     secondNet = his.mutate(secondNet) || secondNet;
+        // )
 
         return [
-            firstNet,
-            secondNet
+            this.mutate(firstNet),
+            this.mutate(secondNet)
         ];
+
+
+        // get weights and bias for mother and father
+        const motherParams = mother.getParams();
+        const fatherParams = father.getParams();
+
+
+        // merge weights and bias for both
+
+        // get params for kids
+
+        // create kids
+
+        // mutate kids
+
+        // return kids
+
     }
 
     mutate(net) {
-        const key = ['weights', 'bias'][Math.floor(Math.random() * 2)];;
+        // const key = ['weights', 'bias'][Math.floor(Math.random() * 2)];;
+        //
+        // switch(key) {
+        //     case 'hiddenLayersLayout':
+        //         return net.mutateHiddenLayersLayout();
+        //         break;
+        //     case 'weights':
+        //         return net.mutateWeights();
+        //         break;
+        //     case 'bias':
+        //         return net.mutateBias();
+        //         break;
+        // }
 
-        switch(key) {
-            case 'hiddenLayersLayout':
-                return net.mutateHiddenLayersLayout();
-                break;
-            case 'weights':
-                return net.mutateWeights();
-                break;
-            case 'bias':
-                return net.mutateBias();
-                break;
-        }
+        net.mutateBias(this.mutationChance);
+        net.mutateWeights(this.mutationChance);
+
+        return net;
 
     }
 
