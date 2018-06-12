@@ -16,6 +16,8 @@ export default class Cradle {
             delete parsed.b;
             delete parsed.l;
         }
+
+        return parsed;
     }
 
     generate(opts, inputs, outputs) {
@@ -26,13 +28,15 @@ export default class Cradle {
             options = opts;
         }
 
+        console.log(options.weights);
+
         const layout = options.layout || options.l || [];
 
         const net = new Net({
             numOfInputs: inputs,
             numOfOutputs: outputs,
             hiddenLayersLayout: layout,
-            hiddenActivationFnc: layout.map(() => new Sigmoid());
+            hiddenActivationFnc: layout.map(() => new Sigmoid()),
             outputActivationFnc: new Sigmoid()
         });
 

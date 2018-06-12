@@ -31,5 +31,6 @@ export {
     ErrorMeasurement,
     PT,
     Darwin,
+    Cradle,
     util
 }
