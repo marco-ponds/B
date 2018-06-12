@@ -104,8 +104,8 @@ export default class Darwin {
 
 
         // get weights and bias for mother and father
-        const motherParams = mother.getParams();
-        const fatherParams = father.getParams();
+        //const motherParams = mother.getParams();
+        //const fatherParams = father.getParams();
 
 
         // merge weights and bias for both

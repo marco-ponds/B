@@ -26,7 +26,7 @@ export default class Neuron {
 
     mutateWeights(mutationChance) {
         for (var i=0; i <= this.weights.length; i++) {
-            if (mutationChange && mutationChance > Math.random()) {
+            if (mutationChance > Math.random()) {
                 this.weights[i] += (( Math.random() * 2 ) -1) / 1000;
             }
         }
