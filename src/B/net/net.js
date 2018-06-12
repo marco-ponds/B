@@ -212,9 +212,9 @@ export default class Net {
     toJSON() {
         const params = this.getParams();
         return JSON.stringify({
-            w: params.weights,
-            b: params.bias,
-            l: params.hiddenLayersLayout
+            weights: params.weights,
+            bias: params.bias,
+            layouts: params.hiddenLayersLayout
         });
     }
 }

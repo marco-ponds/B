@@ -118,6 +118,16 @@ export default class Darwin {
 
         // return kids
 
+        const traverse = (list, action) => {
+            for (var i=0; i<list.length; i++) {
+                if (Array.isArray(list[i])) {
+                    traverse(list[i], action);
+                } else {
+                    action(list[i]);
+                }
+            }
+        }
+
     }
 
     mutate(net) {

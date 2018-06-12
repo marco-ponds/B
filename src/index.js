@@ -13,6 +13,7 @@ import DeltaRule from './B/training/deltarule';
 import ErrorMeasurement from './B/training/errorMeasurement';
 import PT from './B/training/trainer';
 import Darwin from './B/genetics/darwin';
+import Cradle from './B/genetics/cradle';
 import * as util from './B/math/util';
 
 export {

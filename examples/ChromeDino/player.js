@@ -37,10 +37,14 @@ Player.storeNet = (generation) => {
     }
 };
 
-Player.play = (networkId, generationStep, browser) => async () => {
+Player.play = (net, generationStep, browser) => async () => {
     // starts puppeteer, plays dino with this network until the net dies
     //const browser = await puppeteer.launch({headless: true });
-    const network = charles.getNetwork(networkId);
+    if (typeof(network) == 'string') {
+        network = charles.getNetwork(net);
+    } else {
+        nework = net;
+    }
     const page = await browser.newPage();
 
     await page.setViewport({ width: 800, height: 600 });
