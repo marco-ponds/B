@@ -1,4 +1,7 @@
-const UI = require('./ui');
+let UI;
+if (process.argv[2] !== '--no-ui') {
+    UI = require('./ui');
+}
 const B = require('../../dist/B.node');
 const charles = require('./charles');
 const Player = require('./Player');
@@ -22,7 +25,7 @@ function evolve(browsers) {
 
         // print their results
         const results = top.map((n) => n.getScore());
-        UI.logger.log(`-- Results: ${results}`);
+        if (UI) UI.logger.log(`-- Results: ${results}`);
 
         // save params somewhere
 
@@ -33,17 +36,17 @@ function evolve(browsers) {
     // define a function step that executes one iteration
     function execute() {
         // for every network create a Promise
-        UI.logger.log(`-- Doing generation ${generationStep+1} of ${totalGenerations}`);
+        if (UI) UI.logger.log(`-- Doing generation ${generationStep+1} of ${totalGenerations}`);
         // use Promise.all to resolve all of them
         promises = charles.population.map((n, i) => Player.play(n.id(), generationStep, browsers[i])());
         Promise.all(promises)
         .then(() => {
-            UI.updateTable(charles.population);
+            if (UI) UI.updateTable(charles.population);
             charles.population.map(Player.storeNet(generationStep));
             // when Promise all is resolved get average score
             const average = charles.getAverageScore();
-            UI.logger.log(`-- Generationn average ${average}`);
-            UI.updateGraph(totalGenerations, average);
+            if (UI) UI.logger.log(`-- Generationn average ${average}`);
+            if (UI) UI.updateGraph(totalGenerations, average);
             // increase step
             //const newStep = step + 1;
             generationStep++;
@@ -54,7 +57,7 @@ function evolve(browsers) {
             } else {
                 // get the evolution, overriding networks outside
                 charles.evolve();
-                UI.logger.log('-- evolution, networks length, '+ charles.population.length);
+                if (UI) UI.logger.log('-- evolution, networks length, '+ charles.population.length);
                 // go to next step
                 execute();
             }
@@ -69,8 +72,10 @@ function stop() {
     process.exit(0);
 }
 
-UI.screen.key('q', () => {
-    stop();
-});
+if (UI) {
+    UI.screen.key('q', () => {
+        stop();
+    });
+}
 
 Player.createBrowsers().then(evolve);

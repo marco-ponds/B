@@ -1,5 +1,8 @@
 const puppeteer = require('puppeteer');
-const UI = require('./ui');
+let UI;
+if (process.argv[2] !== '--no-ui') {
+    UI = require('./ui');
+}
 const fs = require('fs');
 const path = require('path');
 const constants = require('./constants');
@@ -13,7 +16,7 @@ Player.createBrowsers =  async function() {
     let browsers = [];
 
     for (var i=0; i<constants.totalPopulation; i++) {
-        UI.logger.log(`- creating ${i+1} browser`);
+        if (UI) UI.logger.log(`- creating ${i+1} browser`);
         const browser = await puppeteer.launch({headless: false});
         browsers.push(browser);
     }
@@ -40,10 +43,11 @@ Player.storeNet = (generation) => {
 Player.play = (net, generationStep, browser) => async () => {
     // starts puppeteer, plays dino with this network until the net dies
     //const browser = await puppeteer.launch({headless: true });
-    if (typeof(network) == 'string') {
+    let network;
+    if (typeof(net) == 'string') {
         network = charles.getNetwork(net);
     } else {
-        nework = net;
+        network = net;
     }
     const page = await browser.newPage();
 

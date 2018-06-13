@@ -28,8 +28,6 @@ export default class Cradle {
             options = opts;
         }
 
-        console.log(options.weights);
-
         const layout = options.layout || options.l || [];
 
         const net = new Net({

@@ -59,9 +59,22 @@ export default class Darwin {
     }
 
     breed(mother, father) {
+
+        console.log('breeding');
         const motherParams = mother.getParams();
         const fatherParams = father.getParams();
-
+        /*
+        const traverse = (list, action) => {
+            for (var i=0; i<list.length; i++) {
+                if (Array.isArray(list[i])) {
+                    traverse(list[i], action);
+                } else {
+                    action(list[i]);
+                }
+            }
+        }
+        */
+        /*
         const _breeding = (acc, key) => {
             acc[key] = Math.floor(Math.random() * 1000) % 2 === 0 ?
                 motherParams[key] :
@@ -69,21 +82,58 @@ export default class Darwin {
 
             return acc;
         }
+        */
 
-        const firstChildParams = Object.keys(motherParams).reduce(_breeding, {});
-        const secondChildParams = Object.keys(motherParams).reduce(_breeding, {});
+        const random = () => Math.floor(Math.random() * 1000) % 2 === 0;
+
+        //const firstChildParams = Object.keys(motherParams).reduce(_breeding, {});
+        //const secondChildParams = Object.keys(motherParams).reduce(_breeding, {});
+
+        const getRandomValues = () => {
+            const weights = {
+                inputs: motherParams.weights.inputs.map((value, i) => {
+                    random() ? value : fatherParams.weights.inputs[i];
+                }),
+                hidden: motherParams.weights.hidden.map((l, i) => l.map((value, j) => {
+                    random() ? value : fatherParams.weights.hidden[i][j]
+                })),
+                outputs: motherParams.weights.outputs.map((value, i) => {
+                    random() ? value : fatherParams.weights.outputs[i];
+                })
+            };
+
+            const bias = {
+                inputs: motherParams.bias.inputs.map((value, i) => {
+                    random() ? value : fatherParams.bias.inputs[i];
+                }),
+                hidden: motherParams.bias.hidden.map((l, i) => l.map((value, j) => {
+                    random() ? value : fatherParams.bias.hidden[i][j]
+                })),
+                outputs: motherParams.bias.outputs.map((value, i) => {
+                    random() ? value : fatherParams.bias.outputs[i];
+                })
+            };
+
+            return {
+                weights,
+                bias
+            }
+        }
 
         let firstNet = new Net({
             numOfInputs: this.input,
             numOfOutputs: this.output,
-            ...firstChildParams
+            ...motherParams
         });
 
         let secondNet = new Net({
             numOfInputs: this.input,
             numOfOutputs: this.output,
-            ...secondChildParams
+            ...motherParams
         });
+
+        const firstChildParams = getRandomValues();
+        const secondChildParams = getRandomValues();
 
 
         firstNet.updateBias(firstChildParams.bias);
@@ -118,15 +168,7 @@ export default class Darwin {
 
         // return kids
 
-        const traverse = (list, action) => {
-            for (var i=0; i<list.length; i++) {
-                if (Array.isArray(list[i])) {
-                    traverse(list[i], action);
-                } else {
-                    action(list[i]);
-                }
-            }
-        }
+
 
     }
 
@@ -144,6 +186,8 @@ export default class Darwin {
         //         return net.mutateBias();
         //         break;
         // }
+
+        console.log('mutationChance', this.mutationChance);
 
         net.mutateBias(this.mutationChance);
         net.mutateWeights(this.mutationChance);

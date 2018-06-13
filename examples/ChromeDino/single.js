@@ -12,12 +12,14 @@ const json = fs.readFileSync(filename, 'utf8');
 const cradle = new B.Cradle();
 const net = cradle.generate(json, 4, 2);
 
+console.log(net);
+
 async function start() {
     // create browser
     const browser = await puppeteer.launch({headless: false});
 
     // let him play
-    Player.play(net, 0, browser);
+    Player.play(net, 0, browser)();
 }
 
 start();

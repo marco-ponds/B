@@ -93,29 +93,33 @@ export default class Net {
     }
 
     updateWeights({ inputs, outputs, hidden }) {
-        this.inputLayer.neurons.map((n, i) => n.updateWeights(inputs[i]));
-        this.outputLayer.neurons.map((n, i) => n.updateWeights(outputs[i]));
-        this.hiddenLayers.map((layer) => layer.neurons.map((n, i) => n.updateWeights(hidden[i][j])));
+        this.inputLayer.neurons.forEach((n, i) => n.updateWeights(inputs[i]));
+        this.outputLayer.neurons.forEach((n, i) => n.updateWeights(outputs[i]));
+        this.hiddenLayers.forEach((layer, i) => layer.neurons.forEach((n, j) => n.updateWeights(hidden[i][j])));
     }
 
     updateBias({ inputs, outputs, hidden }) {
-        this.inputLayer.neurons.map((n, i) => n.updateBias(inputs[i]));
-        this.outputLayer.neurons.map((n, i) => n.updateBias(outputs[i]));
-        this.hiddenLayers.map((layer, i) => layer.neurons.map((n, j) => n.updateBias(hidden[i][j])));
+        this.inputLayer.neurons.forEach((n, i) => n.updateBias(inputs[i]));
+        this.outputLayer.neurons.forEach((n, i) => n.updateBias(outputs[i]));
+        this.hiddenLayers.forEach((layer, i) => {
+            layer.neurons.forEach((n, j) => {
+                n.updateBias(hidden[i][j])
+            });
+        });
     }
 
     mutateBias(mutationChance) {
-        this.inputLayer.neurons.map((n, i) => n.mutateBias(mutationChance));
-        this.outputLayer.neurons.map((n, i) => n.mutateBias(mutationChance));
-        this.hiddenLayers.map((layer) => layer.neurons.map((n) => n.mutateBias(mutationChance)));
+        this.inputLayer.neurons.forEach((n, i) => n.mutateBias(mutationChance));
+        this.outputLayer.neurons.forEach((n, i) => n.mutateBias(mutationChance));
+        this.hiddenLayers.forEach((layer) => layer.neurons.forEach((n) => n.mutateBias(mutationChance)));
 
         return this;
     }
 
     mutateWeights(mutationChance) {
-        this.inputLayer.neurons.map((n, i) => n.mutateWeights(mutationChance));
-        this.outputLayer.neurons.map((n, i) => n.mutateWeights(mutationChance));
-        this.hiddenLayers.map((layer) => layer.neurons.map((n) => n.mutateWeights(mutationChance)));
+        this.inputLayer.neurons.forEach((n, i) => n.mutateWeights(mutationChance));
+        this.outputLayer.neurons.forEach((n, i) => n.mutateWeights(mutationChance));
+        this.hiddenLayers.forEach((layer) => layer.neurons.forEach((n) => n.mutateWeights(mutationChance)));
 
         return this;
     }

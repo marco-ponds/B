@@ -72,6 +72,8 @@ UI.updateGraph = function(totalGenerations, newAverage) {
     ])
 }
 
-UI.screen.render();
+UI.start = function() {
+    UI.screen.render();
+}
 
 module.exports = UI;
