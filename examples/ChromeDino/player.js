@@ -9,15 +9,42 @@ const constants = require('./constants');
 const B = require('../../dist/B.node');
 
 const charles = require('./charles');
+const WIDTH = 800;
+const HEIGHT = 300;
 
 let Player = {};
 
 Player.createBrowsers =  async function() {
     let browsers = [];
 
+    puppeteer.defaultArgs(['--window-size=400,300']);
+
+    let row = 0;
+    let col = 0;
+    let cols = 5;
+
     for (var i=0; i<constants.totalPopulation; i++) {
+
+        const pos = {
+            x: WIDTH * col,
+            y: HEIGHT * row
+        };
+        if (( i + 1 ) % 3 === 0) {
+            row++;
+            col = 0;
+        } else {
+            col++;
+        }
+
+        if (UI) UI.logger.log(`--window-position=${pos.x},${pos.y}`);
+
+        let args = [
+            `--window-size=${WIDTH},${HEIGHT}`,
+            `--window-position=${pos.x},${pos.y}`
+        ];
+
         if (UI) UI.logger.log(`- creating ${i+1} browser`);
-        const browser = await puppeteer.launch({headless: false});
+        const browser = await puppeteer.launch({headless: false, args});
         browsers.push(browser);
     }
 
@@ -51,7 +78,7 @@ Player.play = (net, generationStep, browser) => async () => {
     }
     const page = await browser.newPage();
 
-    await page.setViewport({ width: 800, height: 600 });
+    await page.setViewport({ width: WIDTH, height: HEIGHT });
     await page.goto('https://google.com');
     await page.setOfflineMode(true);
     await page.reload();

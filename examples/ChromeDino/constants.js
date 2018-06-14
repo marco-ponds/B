@@ -1,3 +1,3 @@
 module.exports = {
-    totalPopulation: 10
+    totalPopulation: 12
 };
