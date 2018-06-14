@@ -6,8 +6,8 @@ const charles = new B.Darwin({
     input: 4,
     output: 2,
     maxHiddenLayers: 5,
-    retainPercentage: 0.8,
-    mutationChance: 0.3
+    retainPercentage: 0.5,
+    mutationChance: 0.5
 });
 
 charles.create();

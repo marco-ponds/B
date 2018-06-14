@@ -60,14 +60,9 @@ export default class Darwin {
 
     breed(mother, father) {
 
-        console.log('breeding');
-        console.log('\n\n\n');
-
         const motherParams = mother.getParams();
         const fatherParams = father.getParams();
 
-        console.log('got mother and father params');
-        console.log('\n\n\n');
         /*
         const traverse = (list, action) => {
             for (var i=0; i<list.length; i++) {
@@ -131,34 +126,19 @@ export default class Darwin {
             ...motherParams
         });
 
-        console.log('creating the first kid');
-        console.log('\n\n\n');
-
         let secondNet = new Net({
             numOfInputs: this.input,
             numOfOutputs: this.output,
             ...motherParams
         });
 
-        console.log('creating ths second kid');
-        console.log('\n\n\n');
-
         const firstChildParams = getRandomValues();
         const secondChildParams = getRandomValues();
-
-        console.log('got params', secondChildParams);
-        console.log('\n\n\n');
-
-        console.log('got params', firstChildParams);
-        console.log('\n\n\n');
 
         firstNet.updateBias(firstChildParams.bias);
         firstNet.updateWeights(firstChildParams.weights);
         secondNet.updateBias(secondChildParams.bias);
         secondNet.updateWeights(secondChildParams.weights)
-
-        console.log('done updating bias and weithgs for both kids');
-        console.log('\n\n\n');
 
         // now we introduce random mutation
         // if (this.mutationChance > Math.random()) {
@@ -206,9 +186,6 @@ export default class Darwin {
         //         break;
         // }
 
-        console.log('we are mutating a net ', this.mutationChance);
-        console.log('\n\n\n');
-
         net.mutateBias(this.mutationChance);
         net.mutateWeights(this.mutationChance);
 
@@ -227,7 +204,6 @@ export default class Darwin {
     }
 
     evolve() {
-        console.log('evolving\n\n\n');
         // this should run after execution and when every net has a value
 
         // evaluate fitness for every network
@@ -235,18 +211,12 @@ export default class Darwin {
 
         // sort based on scores
         const sorted = this.population.sort(this.sortByAccuracy).slice(0, this.population.length);
-        console.log('sorted population', sorted);
-        console.log('\n\n\n');
 
         // get the number we want to keep for next generation
         const retainedTotal = Math.floor(sorted.length * this.retainPercentage);
-        console.log('retaining index ', retainedTotal);
-        console.log('\n\n\n');
 
         // parents are every network we want to keep
         let parents = sorted.splice(0, retainedTotal);
-        console.log('parents ', parents);
-        console.log('\n\n\n');
 
         // get some of the remainings networks
         // sorted.forEach((net) => {
@@ -254,39 +224,23 @@ export default class Darwin {
         //         parents.push(net);
         //     }
         // });
-        console.log('parents after picking remainings nets ', parents);
-        console.log('\n\n\n');
 
         const missingKids = this.population.length - parents.length;
-        console.log(`missingKids ${missingKids} , populationlength ${this.population.length}, parents length ${parents.length}`);
-        console.log('\n\n\n');
 
         // now creating a new population breeding parents
         let children = [];
-
-        console.log('children length ', children.length);
-        console.log('\n\n\n');
 
         while (children.length < missingKids) {
             // get random mom and dad
             const dad = parents[Math.floor(Math.random() * parents.length)];
             const mom = parents[Math.floor(Math.random() * parents.length)];
 
-            console.log('getting mom and dad');
-            console.log('\n\n\n');
-
             if (!mom.isEqual(dad)) {
-                console.log('mom and dad are not equal');
-                console.log('\n\n\n');
 
                 const babies = this.breed(mom, dad);
-                console.log('done breeding ', children.length, babies.length);
-                console.log('\n\n\n');
 
                 babies.forEach((baby) => {
                     if (children.length < missingKids) {
-                        console.log('adding babies to population');
-                        console.log('\n\n\n');
                         children.push(baby);
                     }
                 });
@@ -294,9 +248,7 @@ export default class Darwin {
         }
         // now adding children to parents gorup
         parents = parents.concat(children);
-        console.log('adding children to parents, ', parents.length);
-        console.log('\n\n\n');
-
+        
         this.population = parents;
 
         return this.population;

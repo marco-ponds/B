@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer');
 const Player = require('./Player');
 
 // read json options
-const filename = path.join(__dirname, 'data/net#041039_2_18593.json');
+const filename = path.join(__dirname, 'data/net#296455_22_18183.json');
 const json = fs.readFileSync(filename, 'utf8');
 
 // create network using that

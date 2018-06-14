@@ -178,8 +178,10 @@ Player.play = (net, generationStep, browser) => async () => {
     // close browser here and return
     await page.setOfflineMode(false);
     await page.close();
+    if (process.argv[2] !== '--no-file') {
+        Player.storeNet(network, generationStep);
+    }
 
-    Player.storeNet(network, generationStep);
 }
 
 module.exports = Player;
