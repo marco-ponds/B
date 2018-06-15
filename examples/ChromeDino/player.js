@@ -68,8 +68,6 @@ Player.storeNet = (generation) => {
 };
 
 Player.play = (net, generationStep, browser) => async () => {
-    // starts puppeteer, plays dino with this network until the net dies
-    //const browser = await puppeteer.launch({headless: true });
     let network;
     if (typeof(net) == 'string') {
         network = charles.getNetwork(net);
@@ -83,12 +81,10 @@ Player.play = (net, generationStep, browser) => async () => {
     await page.setOfflineMode(true);
     await page.reload();
 
-    // when it dies set score
+    await page.evaluate(_ => {
+        window.scrollBy(0, -1000);
+    });
 
-    // have a "game" loop that get values and put into net
-    // check if network is dead or not
-    // if dead return
-    // if not continue
     const startTime = +(new Date());
     const runningForMoreThan5Minutes = function() {
         return (+(new Date()) - startTime) > 300000;
@@ -100,7 +96,6 @@ Player.play = (net, generationStep, browser) => async () => {
 
     let noObstacles = 0;
 
-    // make it start
     await page.keyboard.press('Space');
 
     await holdOnFor(4000);
@@ -108,8 +103,6 @@ Player.play = (net, generationStep, browser) => async () => {
     while (true || !runningForMoreThan5Minutes()) {
 
         await holdOnFor(150);
-
-        // get inputs
 
         const tRex = await page.evaluate(() => {
             if (Runner && Runner.instance_) {
@@ -143,43 +136,23 @@ Player.play = (net, generationStep, browser) => async () => {
             }
         });
 
-        // feed networks
         network.setInput(B.util.normalise([
             speed,
             firstObstacle.xPos,
             firstObstacle.yPos,
-            firstObstacle.width,
-            //secondObstacle.xPos,
-            //secondObstacle.yPos,
-            //secondObstacle.width,
-            //tRex.xPos,
-            //tRex.yPos
+            firstObstacle.width
         ]));
-        // network.calc()
+
         const output = network.calc();
-        // perform operation using output
 
         const jump = output[0];
         const duck = output[1];
         if (jump > 0.9) {
-        //     UI.logger.log('jumping');
             await page.keyboard.press('Space');
         } else if (duck > 0.9) {
-        //     UI.logger.log('ducking');
             await page.keyboard.press('ArrowDown');
         }
 
-        /*
-        if (output > 0.9) {
-            // UI.logger.log('jumping');
-            await page.keyboard.press('Space');
-        } else {
-            // UI.logger.log('ducking');
-            await page.keyboard.press('ArrowDown');
-        }
-        */
-
-        // check if dead
         const isDead = await page.evaluate(() => {
             if (Runner && Runner.instance_) {
                 return Runner.instance_.crashed;
@@ -187,13 +160,10 @@ Player.play = (net, generationStep, browser) => async () => {
         });
 
         network.data('dead', isDead);
-        // if dead returns
+
         if (isDead) break;
     }
 
-    // network is dead here
-
-    // before returning set score for this network
     const score = await page.evaluate(() => {
         if (Runner && Runner.instance_) {
             return Runner.instance_.distanceRan;
@@ -201,8 +171,6 @@ Player.play = (net, generationStep, browser) => async () => {
     });
     network.setScore(score);
 
-    //UI.updateTable(charles.population);
-    // close browser here and return
     await page.setOfflineMode(false);
     await page.close();
     if (process.argv[2] !== '--no-file') {
