@@ -12,6 +12,8 @@ const charles = require('./charles');
 const WIDTH = 800;
 const HEIGHT = 300;
 
+const MINIMUM_SCORE = 15000;
+
 let Player = {};
 
 Player.createBrowsers =  async function() {
@@ -61,9 +63,12 @@ Player.getClosestObstacles = (obstacles, tRex) => {
 
 Player.storeNet = (generation) => {
     return (net) => {
-        const filename = path.join(__dirname, `data/${net.id()}_${generation}_${Math.floor(net.getScore())}.json`);
-        const content = net.toJSON();
-        fs.writeFile(filename, net.toJSON(), 'utf8', function(err) {});
+        const score = net.getScore();
+        if (score > MINIMUM_SCORE) {
+            const filename = path.join(__dirname, `data/${net.id()}_${generation}_${Math.floor(net.getScore())}.json`);
+            const content = net.toJSON();
+            fs.writeFile(filename, net.toJSON(), 'utf8', function(err) {});
+        }
     }
 };
 
