@@ -5,32 +5,41 @@ import Cradle from './cradle';
 
 export default class Darwin {
 
-    constructor({ count, input, output, maxHiddenLayers, retainPercentage, mutationChance }) {
+    constructor({
+            count,
+            input,
+            output,
+            hiddenLayersLayout,
+            outputActivationFnc,
+            hiddenActivationFnc,
+            retainPercentage,
+            mutationChance }) {
+
         this.input = input;
         this.output = output;
         this.count = count;
         this.population = [];
-        this.minHiddenLayers = maxHiddenLayers;
-        this.minNeuronsPerLayer = 1;
-        this.maxNeuronsPerLayer = 500;
+        //this.minHiddenLayers = maxHiddenLayers;
+        this.hiddenLayersLayout = hiddenLayersLayout;
+        this.outputActivationFnc = new outputActivationFnc();
+        this.hiddenActivationFnc = hiddenActivationFnc;
 
         this.mutationChance = mutationChance;
-
         this.retainPercentage = retainPercentage;
 
         this.cradle = new Cradle();
     }
 
     generateRandomParams() {
-        const hiddenLayersLayout = [3];
-        const hiddenActivationFnc = hiddenLayersLayout.map((layer) => new Sigmoid());
+        //const hiddenLayersLayout = [3];
+        const hiddenActivationFnc = this.hiddenLayersLayout.map(() => new this.hiddenActivationFnc());
 
         return {
             numOfInputs: this.input,
             numOfOutputs: this.output,
-            hiddenLayersLayout,
+            hiddenLayersLayout: this.hiddenLayersLayout,
             hiddenActivationFnc,
-            outputActivationFnc: new Sigmoid()
+            outputActivationFnc: this.outputActivationFnc
         };
     }
 

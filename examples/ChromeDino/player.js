@@ -19,7 +19,11 @@ let Player = {};
 Player.createBrowsers =  async function() {
     let browsers = [];
 
-    puppeteer.defaultArgs(['--window-size=400,300']);
+    puppeteer.defaultArgs([
+        '--window-size=400,300',
+        '--mute-audio',
+        '--hide-scrollbars'
+    ]);
 
     let row = 0;
     let col = 0;
@@ -41,6 +45,7 @@ Player.createBrowsers =  async function() {
         if (UI) UI.logger.log(`--window-position=${pos.x},${pos.y}`);
 
         let args = [
+            '--mute-audio',
             `--window-size=${WIDTH},${HEIGHT}`,
             `--window-position=${pos.x},${pos.y}`
         ];
@@ -58,7 +63,10 @@ Player.getClosestObstacles = (obstacles, tRex) => {
         return [];
     }
 
-    return obstacles.filter((o) => o.xPos > tRex.xPos).slice(0, 2);
+    return obstacles
+        .filter((o) => o.xPos > tRex.xPos)
+        .map(o => ({ ...o, distance: o.xPos - tRex.xPos }))
+        .slice(0, 2);
 },
 
 Player.storeNet = (generation) => {
@@ -72,7 +80,7 @@ Player.storeNet = (generation) => {
     }
 };
 
-Player.play = (net, generationStep, browser) => async () => {
+Player.play = async (net, generationStep, browser) => {
     let network;
     if (typeof(net) == 'string') {
         network = charles.getNetwork(net);
@@ -100,6 +108,7 @@ Player.play = (net, generationStep, browser) => async () => {
     });
 
     let noObstacles = 0;
+    let jumps = 0;
 
     await page.keyboard.press('Space');
 
@@ -123,6 +132,7 @@ Player.play = (net, generationStep, browser) => async () => {
         let closeObstacles = Player.getClosestObstacles(obstacles, tRex);
         const defaultObstacle = {
             xPos: 500,
+            distance: 500,
             yPos: 20,
             width: 20
         };
@@ -142,8 +152,8 @@ Player.play = (net, generationStep, browser) => async () => {
         });
 
         network.setInput(B.util.normalise([
-            speed,
-            firstObstacle.xPos,
+            //speed,
+            firstObstacle.distance,
             firstObstacle.yPos,
             firstObstacle.width
         ]));
@@ -152,9 +162,16 @@ Player.play = (net, generationStep, browser) => async () => {
 
         const jump = output[0];
         const duck = output[1];
+
+        console.log(jump, duck);
+
         if (jump > 0.9) {
+            jumps++;
             await page.keyboard.press('Space');
-        } else if (duck > 0.9) {
+            //await holdOnFor(250);
+        }
+
+        if (duck > 0.9) {
             await page.keyboard.press('ArrowDown');
         }
 
@@ -178,10 +195,6 @@ Player.play = (net, generationStep, browser) => async () => {
 
     await page.setOfflineMode(false);
     await page.close();
-    if (process.argv[2] !== '--no-file') {
-        Player.storeNet(network, generationStep);
-    }
-
 }
 
 module.exports = Player;

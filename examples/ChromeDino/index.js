@@ -14,7 +14,7 @@ const totalGenerations = 100;
 
 let promises = [];
 
-function evolve(browsers) {
+function startEvolution(browsers) {
 
     function evaluate() {
         const sorted = charles.population.sort(charles.sortByAccuracy);
@@ -26,30 +26,34 @@ function evolve(browsers) {
         browsers.forEach(b => b.close());
     }
 
+    function nextStep() {
+        if (UI) UI.updateTable(charles.population);
+
+        charles.population.forEach(Player.storeNet(generationStep));
+
+        const average = charles.getAverageScore();
+        console.log('generation:', generationStep, ', average:', average);
+
+        if (UI) UI.logger.log(`-- Generationn average ${average}`);
+        if (UI) UI.updateGraph(totalGenerations, average);
+
+        generationStep++;
+
+        if (generationStep > totalGenerations) {
+            evaluate();
+        } else {
+            charles.evolve();
+            if (UI) UI.logger.log('-- evolution, networks length, '+ charles.population.length);
+            execute();
+        }
+    }
+
     function execute() {
         if (UI) UI.logger.log(`-- Doing generation ${generationStep+1} of ${totalGenerations}`);
-        promises = charles.population.map((n, i) => Player.play(n.id(), generationStep, browsers[i])());
+        promises = charles.population.map((n, i) => Player.play(n.id(), generationStep, browsers[i]));
         Promise.all(promises)
-        .then(() => {
-            if (UI) UI.updateTable(charles.population);
-
-            charles.population.forEach(Player.storeNet(generationStep));
-
-            const average = charles.getAverageScore();
-
-            if (UI) UI.logger.log(`-- Generationn average ${average}`);
-            if (UI) UI.updateGraph(totalGenerations, average);
-
-            generationStep++;
-
-            if (generationStep > totalGenerations) {
-                evaluate();
-            } else {
-                charles.evolve();
-                if (UI) UI.logger.log('-- evolution, networks length, '+ charles.population.length);
-                execute();
-            }
-        });
+            .then(nextStep)
+            .catch(nextStep);
     }
 
     execute();
@@ -65,4 +69,4 @@ if (UI) {
     });
 }
 
-Player.createBrowsers().then(evolve);
+Player.createBrowsers().then(startEvolution);

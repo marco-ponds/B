@@ -27,7 +27,8 @@ export default class Neuron {
     mutateWeights(mutationChance) {
         for (var i=0; i <= this.weights.length; i++) {
             if (mutationChance > Math.random()) {
-                this.weights[i] += (( Math.random() * 2 ) -1) / 1000;
+                //this.weights[i] += (( Math.random() * 2 ) -1) / 50;
+                this.weights[i] += Math.random() - .5;
             }
         }
     }
@@ -40,7 +41,8 @@ export default class Neuron {
 
     mutateBias(mutationChance) {
         if (mutationChance > Math.random()) {
-            this.bias += (( Math.random() * 2 ) -1) / 1000;
+            //this.bias += (( Math.random() * 2 ) -1) / 50;
+            this.bias += Math.random() - .5;
         }
     }
 

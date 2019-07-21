@@ -25,6 +25,7 @@ export {
     Net,
     ActivationFunction,
     Sigmoid,
+    Rectifier,
     Linear,
     Hyperthan,
     DeltaRule,
