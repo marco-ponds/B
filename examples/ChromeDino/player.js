@@ -111,13 +111,7 @@ Player.play = async (net, generationStep, browser, i) => {
                 }
             });
             let closeObstacles = Player.getClosestObstacles(obstacles, tRex);
-            const defaultObstacle = {
-                xPos: 0,
-                distance: 0,
-                yPos: 0,
-                width: 0
-            };
-            let firstObstacle = closeObstacles[0] || defaultObstacle;
+            let firstObstacle = closeObstacles[0] || constants.defaultObstacle;
 
             const speed = await page.evaluate(() => {
                 if (Runner && Runner.instance_) {
