@@ -23,7 +23,16 @@ function startEvolution(browsers) {
 
         if (UI) UI.logger.log(`-- Results: ${results}`);
 
-        browsers.forEach(b => b.close());
+        close();
+    }
+
+    async function close() {
+        await browsers.forEach(async b => await b.close());
+        stop();
+    }
+
+    function stop() {
+        process.exit(0);
     }
 
     function nextStep() {
@@ -50,7 +59,7 @@ function startEvolution(browsers) {
 
     function execute() {
         if (UI) UI.logger.log(`-- Doing generation ${generationStep+1} of ${totalGenerations}`);
-        promises = charles.population.map((n, i) => Player.play(n.id(), generationStep, browsers[i]));
+        promises = charles.population.map((n, i) => Player.play(n.id(), generationStep, browsers[i], i));
         Promise.all(promises)
             .then(nextStep)
             .catch(nextStep);
@@ -59,9 +68,7 @@ function startEvolution(browsers) {
     execute();
 }
 
-function stop() {
-    process.exit(0);
-}
+
 
 if (UI) {
     UI.screen.key('q', () => {

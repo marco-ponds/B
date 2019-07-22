@@ -80,7 +80,7 @@ Player.storeNet = (generation) => {
     }
 };
 
-Player.play = async (net, generationStep, browser) => {
+Player.play = async (net, generationStep, browser, i) => {
     let network;
     if (typeof(net) == 'string') {
         network = charles.getNetwork(net);
@@ -99,8 +99,8 @@ Player.play = async (net, generationStep, browser) => {
     });
 
     const startTime = +(new Date());
-    const runningForMoreThan5Minutes = function() {
-        return (+(new Date()) - startTime) > 300000;
+    const runningForLessThan5Minutes = function() {
+        return (+(new Date()) - startTime) < 300000;
     }
 
     const holdOnFor = (timeout) => new Promise((resolve) => {
@@ -114,9 +114,9 @@ Player.play = async (net, generationStep, browser) => {
 
     await holdOnFor(4000);
 
-    while (true || !runningForMoreThan5Minutes()) {
+    while (runningForLessThan5Minutes()) {
 
-        await holdOnFor(150);
+        //await holdOnFor(150);
 
         const tRex = await page.evaluate(() => {
             if (Runner && Runner.instance_) {
@@ -131,13 +131,14 @@ Player.play = async (net, generationStep, browser) => {
         });
         let closeObstacles = Player.getClosestObstacles(obstacles, tRex);
         const defaultObstacle = {
-            xPos: 500,
-            distance: 500,
-            yPos: 20,
-            width: 20
+            xPos: 0,
+            distance: 0,
+            yPos: 0,
+            width: 0
         };
         let firstObstacle = closeObstacles[0] || defaultObstacle;
         let secondObstacle = closeObstacles[1] || defaultObstacle;
+        let gap = secondObstacle.xPos - firstObstacle.xPos;
 
         if (!closeObstacles.length) {
             noObstacles++;
@@ -152,19 +153,22 @@ Player.play = async (net, generationStep, browser) => {
         });
 
         network.setInput(B.util.normalise([
-            //speed,
+            speed,
             firstObstacle.distance,
             firstObstacle.yPos,
             firstObstacle.width
         ]));
 
         const output = network.calc();
+        const { max, index } = B.util.maxIndex(output);
 
-        const jump = output[0];
-        const duck = output[1];
+        if (i === 0) console.log(output, 'max', max, 'index', index);
 
-        console.log(jump, duck);
+        //const jump = output[0];
+        //const duck = output[1];
 
+        //console.log(output);
+        /*
         if (jump > 0.9) {
             jumps++;
             await page.keyboard.press('Space');
@@ -173,7 +177,50 @@ Player.play = async (net, generationStep, browser) => {
 
         if (duck > 0.9) {
             await page.keyboard.press('ArrowDown');
+        }*/
+
+        /*
+        if (max < 0.9) {
+            await page.keyboard.up('ArrowDown');
+        } else {
+            switch(index) {
+                case 0:
+                    await page.keyboard.up('Space');
+                    break;
+                case 1:
+                    await page.keyboard.down('Space');
+                    break;
+                case 2:
+                    await page.keyboard.down('ArrowDown');
+                    break;
+            }
         }
+        */
+        switch(index) {
+            case 0:
+                if (i === 0) console.log('RUN');
+                await page.keyboard.up('Space');
+                await page.keyboard.up('ArrowDown');
+
+                break;
+            case 1:
+                if (i === 0) console.log('JUMP');
+                await page.keyboard.down('Space');
+                break;
+            case 2:
+                if (i === 0) console.log('DUCK');
+                await page.keyboard.down('ArrowDown');
+                break;
+        }
+        //else if (index === 3) {
+        //    await page.keyboard.up('Space');
+        //}
+
+        //if (jump > duck) {
+        //    await page.keyboard.press('Space');
+        //} else {
+        //    await page.keyboard.press('ArrowDown');
+        //}
 
         const isDead = await page.evaluate(() => {
             if (Runner && Runner.instance_) {
@@ -183,7 +230,10 @@ Player.play = async (net, generationStep, browser) => {
 
         network.data('dead', isDead);
 
-        if (isDead) break;
+        if (isDead) {
+            await holdOnFor(1500);
+            break;
+        }
     }
 
     const score = await page.evaluate(() => {

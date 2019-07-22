@@ -6,8 +6,8 @@ const path = require('path');
 
 const charles = new B.Darwin({
     count: constants.totalPopulation,
-    input: 3,
-    output: 2,
+    input: 4,
+    output: 3,
     hiddenLayersLayout: [],
     outputActivationFnc: B.Sigmoid,
     hiddenActivationFnc: B.Sigmoid,
