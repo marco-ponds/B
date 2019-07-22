@@ -2,6 +2,7 @@ const fs = require('fs');
 const B = require('../../dist/B.node');
 const path = require('path');
 const puppeteer = require('puppeteer');
+const constants = require('./constants');
 const Player = require('./Player');
 
 // read json options
@@ -10,15 +11,12 @@ const json = fs.readFileSync(filename, 'utf8');
 
 // create network using that
 const cradle = new B.Cradle();
-const net = cradle.generate(json, 4, 2);
+const net = cradle.generate(json, constants.input, constants.output);
 
 console.log(net);
 
 async function start() {
-    // create browser
     const browser = await puppeteer.launch({headless: false});
-
-    // let him play
     Player.play(net, 0, browser)();
 }
 
