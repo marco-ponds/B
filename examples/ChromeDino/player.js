@@ -144,7 +144,6 @@ Player.play = async (net, generationStep, browser, i) => {
                     if (i === 0) console.log('RUN');
                     await page.keyboard.up('Space');
                     await page.keyboard.up('ArrowDown');
-
                     break;
                 case 1:
                     if (i === 0) console.log('JUMP');
@@ -182,6 +181,6 @@ Player.play = async (net, generationStep, browser, i) => {
     });
     network.setScore(score);
     await page.close();
-}
+};
 
 module.exports = Player;

@@ -9,7 +9,7 @@ const WIDTH = 500;
 const HEIGHT = 300;
 
 // read json options
-const filename = path.join(__dirname, 'data/net#684073_0_58523.json');
+const filename = path.join(__dirname, constants.best);
 const json = fs.readFileSync(filename, 'utf8');
 
 // create network using that
