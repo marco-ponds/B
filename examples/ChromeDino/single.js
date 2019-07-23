@@ -6,7 +6,7 @@ const constants = require('./constants');
 const Player = require('./Player');
 
 // read json options
-const filename = path.join(__dirname, 'data/net#296455_22_18183.json');
+const filename = path.join(__dirname, 'data/net#684073_0_58523.json');
 const json = fs.readFileSync(filename, 'utf8');
 
 // create network using that
@@ -17,7 +17,7 @@ console.log(net);
 
 async function start() {
     const browser = await puppeteer.launch({headless: false});
-    Player.play(net, 0, browser)();
+    Player.play(net, 0, browser);
 }
 
 start();

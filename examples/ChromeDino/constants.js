@@ -1,5 +1,5 @@
 module.exports = {
-    totalPopulation: 9,
+    totalPopulation: 6,
     totalGenerations: 100,
     input: 4,
     output: 3,

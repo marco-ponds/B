@@ -15,9 +15,9 @@ const charles = new B.Darwin({
     hiddenActivationFnc: B.Sigmoid
 });
 
-const filename = path.join(__dirname, 'data/net#949968_13_24483.json');
-const json = fs.readFileSync(filename, 'utf8');
+//const filename = path.join(__dirname, 'data/net#949968_13_24483.json');
+//const json = fs.readFileSync(filename, 'utf8');
 
-charles.create(json);
+charles.create();
 
 module.exports = charles;

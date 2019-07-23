@@ -105,6 +105,12 @@ Player.play = async (net, generationStep, browser, i) => {
                 }
             });
 
+            const canvasHeight = await page.evaluate(() => {
+                if (Runner && Runner.instance_) {
+                    return Runner.instance_.canvas.height;
+                }
+            });
+
             let obstacles = await page.evaluate(() => {
                 if (Runner && Runner.instance_) {
                     return Runner.instance_.horizon.obstacles;
@@ -119,10 +125,12 @@ Player.play = async (net, generationStep, browser, i) => {
                 }
             });
 
+            const getRelativeYPos = (yPos) => (canvasHeight - yPos);
+
             network.setInput(B.util.normalise([
                 speed,
                 firstObstacle.distance,
-                firstObstacle.yPos,
+                getRelativeYPos(firstObstacle.yPos),
                 firstObstacle.width
             ]));
 
