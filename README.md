@@ -6,18 +6,18 @@ B
 - **test:** `npm run test` ( currently there are no tests )
 
 ---
-####Examples:
+#### Examples:
 
 - **Google Dinosaur:**
     - run `npm run start:file -- ./examples/ChromeDino/single` to run the best runner
     - run `npm run start:file -- ./examples/ChromeDino` to run the training process
     
  ---
- ####Contribution:
+ #### Contribution:
  Yes please.
  
  ---
- ####License
+ #### License
  MIT License
  
  Copyright (c) 2019 Marco Stagni
