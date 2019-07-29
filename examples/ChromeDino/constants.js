@@ -19,5 +19,7 @@ module.exports = {
         }
     },
     // who is the best
-    best: 'data/net#684073_0_58523.json'
+    //best: 'data/net#684073_0_58523.json'
+    // best: 'data/net#503942_0_33968.json'
+    best: 'data/net#845982_3_31834.json'
 };
